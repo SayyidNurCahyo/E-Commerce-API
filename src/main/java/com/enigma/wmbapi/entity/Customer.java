@@ -2,11 +2,9 @@ package com.enigma.wmbapi.entity;
 
 import com.enigma.wmbapi.constant.ConstantTable;
 import jakarta.persistence.*;
-import lombok.Builder;
 import lombok.Data;
 
 @Data
-@Builder
 @Entity
 @Table(name = ConstantTable.CUSTOMER)
 public class Customer {
@@ -20,3 +18,5 @@ public class Customer {
     @Column(name = "phone_number")
     private String phone;
 }
+
+
