@@ -1,5 +1,6 @@
 package com.enigma.wmbapi.controller;
 
+import com.enigma.wmbapi.dto.response.CommonResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
