@@ -1,15 +1,13 @@
 package com.enigma.wmbapi.service;
 
-import com.enigma.wmbapi.dto.response.CommonResponse;
+import com.enigma.wmbapi.dto.request.SearchCustomerRequest;
 import com.enigma.wmbapi.entity.Customer;
-import org.springframework.http.ResponseEntity;
-
-import java.util.List;
+import org.springframework.data.domain.Page;
 
 public interface CustomerService {
     Customer addCustomer(Customer customer);
     Customer getCustomerById(String id);
-    ResponseEntity<CommonResponse<List<Customer>>> getAllCustomer(Integer page, Integer size, String sortBy, String direction, String name, String phone);
-    ResponseEntity<Customer> updateCustomer(Customer customer);
-    ResponseEntity<Customer> deleteById(String id);
+    Page<Customer> getAllCustomer(SearchCustomerRequest request);
+    Customer updateCustomer(Customer customer);
+    Customer deleteById(String id);
 }
