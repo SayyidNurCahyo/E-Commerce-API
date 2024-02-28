@@ -45,12 +45,11 @@ public class TableController {
             @RequestParam(name = "size", defaultValue = "5") Integer size,
             @RequestParam(name = "sortBy", defaultValue = "name") String sortBy,
             @RequestParam(name = "direction", defaultValue = "asc") String direction,
-            @RequestParam(name = "name", required = false) String name,
-            @RequestParam(name = "price", required = false) Long price
+            @RequestParam(name = "name", required = false) String name
     ) {
         SearchTableRequest request = SearchTableRequest.builder()
                 .page(page).size(size).sortBy(sortBy).direction(direction)
-                .name(name).price(price).build();
+                .name(name).build();
         Page<Table> tables = tableService.getAllTable(request);
         PagingResponse pagingResponse = PagingResponse.builder()
                 .totalPages(tables.getTotalPages())

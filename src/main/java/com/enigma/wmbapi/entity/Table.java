@@ -6,7 +6,7 @@ import lombok.Data;
 
 @Data
 @Entity
-@jakarta.persistence.Table(name = ConstantTable.MENU)
+@jakarta.persistence.Table(name = ConstantTable.TABLE)
 public class Table {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
