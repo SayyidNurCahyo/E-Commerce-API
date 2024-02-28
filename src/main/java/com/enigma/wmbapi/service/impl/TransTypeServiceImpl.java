@@ -1,6 +1,5 @@
 package com.enigma.wmbapi.service.impl;
 
-import com.enigma.wmbapi.dto.request.SearchTransTypeRequest;
 import com.enigma.wmbapi.entity.TransType;
 import com.enigma.wmbapi.repository.TransTypeRepository;
 import com.enigma.wmbapi.service.TransTypeService;
