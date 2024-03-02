@@ -3,9 +3,13 @@ package com.enigma.wmbapi.entity;
 import com.enigma.wmbapi.constant.ConstantTable;
 import jakarta.persistence.*;
 import jakarta.persistence.Table;
-import lombok.Data;
+import lombok.*;
 
-@Data
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
 @Entity
 @Table(name = ConstantTable.CUSTOMER)
 public class Customer {
@@ -18,6 +22,10 @@ public class Customer {
 
     @Column(name = "phone_number")
     private String phone;
+
+    @OneToOne
+    @JoinColumn(name = "user_account_id", unique = true)
+    private UserAccount userAccount;
 }
 
 

@@ -1,6 +1,9 @@
 package com.enigma.wmbapi.controller;
 
 import com.enigma.wmbapi.dto.response.CommonResponse;
+import jakarta.validation.ConstraintViolationException;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -14,5 +17,33 @@ public class ErrorController {
                 .statusCode(exception.getStatusCode().value())
                 .message(exception.getReason()).build();
         return ResponseEntity.status(exception.getStatusCode()).body(response);
+    }
+    @ExceptionHandler({ConstraintViolationException.class})
+    public ResponseEntity<CommonResponse<?>> constraintViolationExceptionHandler(ConstraintViolationException e) {
+        CommonResponse<?> response = CommonResponse.builder()
+                .statusCode(HttpStatus.BAD_REQUEST.value())
+                .message(e.getMessage())
+                .build();
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<CommonResponse<?>> dataIntegrityViolationException(DataIntegrityViolationException e){
+        CommonResponse.CommonResponseBuilder<Object> builder = CommonResponse.builder();
+        HttpStatus httpStatus = null;
+        if(e.getMessage().contains("Foreign Key Constraint")){
+            builder.statusCode(HttpStatus.BAD_REQUEST.value());
+            builder.message("Can't Delete Data Caused By Any References in Another Table");
+            httpStatus = HttpStatus.BAD_REQUEST;
+        } else if (e.getMessage().contains("Unique Constraint") || e.getMessage().contains("Duplicate Entry")) {
+            builder.statusCode(HttpStatus.CONFLICT.value());
+            builder.message("Data Already Exists");
+            httpStatus = HttpStatus.CONFLICT;
+        }else {
+            builder.statusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+            builder.message("Internal Server Error");
+            httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
+        }
+        return ResponseEntity.status(httpStatus).body(builder.build());
     }
 }
