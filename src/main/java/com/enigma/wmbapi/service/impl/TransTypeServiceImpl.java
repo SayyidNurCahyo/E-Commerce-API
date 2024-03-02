@@ -1,8 +1,10 @@
 package com.enigma.wmbapi.service.impl;
 
+import com.enigma.wmbapi.dto.request.GetTransTypeRequest;
 import com.enigma.wmbapi.entity.TransType;
 import com.enigma.wmbapi.repository.TransTypeRepository;
 import com.enigma.wmbapi.service.TransTypeService;
+import com.enigma.wmbapi.util.ValidationUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -19,6 +21,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class TransTypeServiceImpl implements TransTypeService {
     private final TransTypeRepository transTypeRepository;
+    private final ValidationUtil validationUtil;
 
     @Transactional(rollbackFor = Exception.class)
     @Override
@@ -30,5 +33,11 @@ public class TransTypeServiceImpl implements TransTypeService {
     @Override
     public List<TransType> getAllTransType() {
         return transTypeRepository.findAll();
+    }
+
+    @Override
+    public TransType getOrSave(GetTransTypeRequest transType) {
+        validationUtil.validate(transType);
+        return transTypeRepository.findById(transType.getId()).orElseGet(()->transTypeRepository.saveAndFlush(TransType.builder().id(transType.getId()).description(transType.getDescription()).build()));
     }
 }

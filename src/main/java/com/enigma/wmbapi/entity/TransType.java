@@ -1,16 +1,21 @@
 package com.enigma.wmbapi.entity;
 
 import com.enigma.wmbapi.constant.ConstantTable;
+import com.enigma.wmbapi.constant.TransTypeId;
 import jakarta.persistence.*;
 import jakarta.persistence.Table;
-import lombok.Data;
+import lombok.*;
 
-@Data
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
 @Entity
 @Table(name = ConstantTable.TRANS_TYPE)
 public class TransType {
     @Id
-    private String id;
+    private TransTypeId id;
 
     @Column(name = "description")
     private String description;
