@@ -1,7 +1,9 @@
 package com.enigma.wmbapi.controller;
 
 import com.enigma.wmbapi.constant.APIUrl;
+import com.enigma.wmbapi.dto.request.NewMenuRequest;
 import com.enigma.wmbapi.dto.request.SearchMenuRequest;
+import com.enigma.wmbapi.dto.request.UpdateMenuRequest;
 import com.enigma.wmbapi.dto.response.CommonResponse;
 import com.enigma.wmbapi.dto.response.PagingResponse;
 import com.enigma.wmbapi.entity.Menu;
@@ -22,7 +24,7 @@ import java.util.List;
 public class MenuController {
     private final MenuService menuService;
     @PostMapping
-    public ResponseEntity<CommonResponse<Menu>> addMenu(@RequestBody Menu menu) {
+    public ResponseEntity<CommonResponse<Menu>> addMenu(@RequestBody NewMenuRequest menu) {
         Menu menuAdded = menuService.addMenu(menu);
         CommonResponse<Menu> response = CommonResponse.<Menu>builder()
                 .statusCode(HttpStatus.CREATED.value())
@@ -70,8 +72,8 @@ public class MenuController {
     }
 
     @PutMapping
-    public ResponseEntity<CommonResponse<Menu>> updateMenu(@RequestBody Menu product) {
-        Menu update = menuService.updateMenu(product);
+    public ResponseEntity<CommonResponse<Menu>> updateMenu(@RequestBody UpdateMenuRequest request) {
+        Menu update = menuService.updateMenu(request);
         CommonResponse<Menu> response = CommonResponse.<Menu>builder()
                 .statusCode(HttpStatus.ACCEPTED.value())
                 .message("Data Menu Updated")

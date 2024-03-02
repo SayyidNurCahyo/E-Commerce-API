@@ -1,7 +1,9 @@
 package com.enigma.wmbapi.controller;
 
 import com.enigma.wmbapi.constant.APIUrl;
+import com.enigma.wmbapi.dto.request.NewTableRequest;
 import com.enigma.wmbapi.dto.request.SearchTableRequest;
+import com.enigma.wmbapi.dto.request.UpdateTableRequest;
 import com.enigma.wmbapi.dto.response.CommonResponse;
 import com.enigma.wmbapi.dto.response.PagingResponse;
 import com.enigma.wmbapi.entity.Table;
@@ -20,7 +22,7 @@ import java.util.List;
 public class TableController {
     private final TableService tableService;
     @PostMapping
-    public ResponseEntity<CommonResponse<Table>> addTable(@RequestBody Table table) {
+    public ResponseEntity<CommonResponse<Table>> addTable(@RequestBody NewTableRequest table) {
         Table tableAdded = tableService.addTable(table);
         CommonResponse<Table> response = CommonResponse.<Table>builder()
                 .statusCode(HttpStatus.CREATED.value())
@@ -67,8 +69,8 @@ public class TableController {
     }
 
     @PutMapping
-    public ResponseEntity<CommonResponse<Table>> updateTable(@RequestBody Table product) {
-        Table update = tableService.updateTable(product);
+    public ResponseEntity<CommonResponse<Table>> updateTable(@RequestBody UpdateTableRequest request) {
+        Table update = tableService.updateTable(request);
         CommonResponse<Table> response = CommonResponse.<Table>builder()
                 .statusCode(HttpStatus.ACCEPTED.value())
                 .message("Data Table Updated")

@@ -2,9 +2,13 @@ package com.enigma.wmbapi.entity;
 
 import com.enigma.wmbapi.constant.ConstantTable;
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.*;
 
-@Data
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
 @Entity
 @jakarta.persistence.Table(name = ConstantTable.TABLE)
 public class Table {
