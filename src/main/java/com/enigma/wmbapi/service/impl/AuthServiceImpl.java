@@ -15,11 +15,12 @@ import com.enigma.wmbapi.service.JwtService;
 import com.enigma.wmbapi.service.RoleService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
+import org.springframework.web.server.ResponseStatusException;
 import java.util.List;
 
 @Service
@@ -56,14 +57,36 @@ public class AuthServiceImpl implements AuthService {
     @Transactional(rollbackFor = Exception.class)
     @Override
     public RegisterResponse registerAdmin(RegisterRequest request) {
+//        Role role=roleService.getOrSave(UserRole.ROLE_ADMIN);
+//        String hashPassword = passwordEncoder.encode(request.getPassword());
+//        UserAccount account = UserAccount.builder()
+//                .username(request.getUsername())
+//                .password(hashPassword)
+//                .roles(List.of(role))
+//                .isEnabled(true).build();
+//        userAccountRepository.saveAndFlush(account);
+//        Customer customer = Customer.builder()
+//                .name(request.getName())
+//                .phone(request.getPhone())
+//                .userAccount(account).build();
+//        customerService.addCustomer(customer);
+//        List<String> roleAuth = account.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList();
+//        return RegisterResponse.builder()
+//                .username(account.getUsername())
+//                .roles(roleAuth).build();
         return null;
     }
 
     @Transactional(rollbackFor = Exception.class)
     @Override
     public LoginResponse login(AuthRequest request) {
-
+        UserAccount account = userAccountRepository.findUserAccount(request.getUsername()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"User Account Not Found, Register First"));
+        if(!passwordEncoder.matches(request.getPassword(), account.getPassword())) throw new ResponseStatusException(HttpStatus.NOT_FOUND,"User Account Not Found, Register First");
         String token = jwtService.generateToken();
-        return LoginResponse.builder().token(token).build();
+        return LoginResponse.builder()
+                .username(request.getUsername())
+                .token(token)
+                .roles(account.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList())
+                .build();
     }
 }

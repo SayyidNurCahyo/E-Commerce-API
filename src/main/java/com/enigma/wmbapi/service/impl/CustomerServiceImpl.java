@@ -48,9 +48,9 @@ public class CustomerServiceImpl implements CustomerService {
     @Override
     public Customer updateCustomer(Customer customer) {
         Customer cust = customerRepository.findById(customer.getId()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"Customer Not Found"));
-        cust.setName(customer.getName());
-        cust.setPhone(customer.getPhone());
-        return customerRepository.saveAndFlush(cust);
+//        cust.setName(customer.getName());
+//        cust.setPhone(customer.getPhone());
+        return customerRepository.saveAndFlush(customer);
     }
 
     @Transactional(rollbackFor = Exception.class)

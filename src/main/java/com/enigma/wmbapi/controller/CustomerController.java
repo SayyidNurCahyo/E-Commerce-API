@@ -9,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import com.enigma.wmbapi.dto.response.CommonResponse;
@@ -59,7 +60,7 @@ public class CustomerController {
         return ResponseEntity.ok(response);
     }
 
-    @PutMapping
+    @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<CommonResponse<Customer>> updateCustomer(@RequestBody Customer customer) {
         Customer update = customerService.updateCustomer(customer);
         CommonResponse<Customer> response = CommonResponse.<Customer>builder()
