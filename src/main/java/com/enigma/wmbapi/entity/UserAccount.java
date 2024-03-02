@@ -31,11 +31,11 @@ public class UserAccount implements UserDetails {
     @Column(name = "is_enable")
     private Boolean isEnabled;
     @ManyToMany(fetch = FetchType.EAGER)
-    private Role role;
+    private List<Role> roles;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return Collections.singleton(new SimpleGrantedAuthority(role.toString()));
+        return roles.stream().map(role -> new SimpleGrantedAuthority(role.getRole().name())).toList();
     }
 
     @Override

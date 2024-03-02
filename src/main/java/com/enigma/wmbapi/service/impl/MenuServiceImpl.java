@@ -11,6 +11,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 @Service
@@ -18,16 +19,19 @@ import org.springframework.web.server.ResponseStatusException;
 public class MenuServiceImpl implements MenuService {
     private final MenuRepository menuRepository;
 
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public Menu addMenu(Menu menu) {
         return menuRepository.saveAndFlush(menu);
     }
 
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public Menu getMenuById(String id) {
         return menuRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"Menu Not Found"));
     }
 
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public Page<Menu> getAllMenu(SearchMenuRequest request) {
         if (request.getPage()<1) request.setPage(1);
@@ -37,12 +41,14 @@ public class MenuServiceImpl implements MenuService {
         return menuRepository.findAll(page);
     }
 
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public Menu updateMenu(Menu menu) {
         menuRepository.findById(menu.getId()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"Menu Not Found"));
         return menuRepository.saveAndFlush(menu);
     }
 
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public Menu deleteById(String id) {
         Menu menu = menuRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"Menu Not Found"));

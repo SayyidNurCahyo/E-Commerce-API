@@ -10,6 +10,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
@@ -19,11 +20,13 @@ import java.util.List;
 public class TransTypeServiceImpl implements TransTypeService {
     private final TransTypeRepository transTypeRepository;
 
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public TransType getTransTypeById(String id) {
         return transTypeRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"TransType Not Found"));
     }
 
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public List<TransType> getAllTransType() {
         return transTypeRepository.findAll();

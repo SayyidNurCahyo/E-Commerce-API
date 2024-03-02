@@ -20,15 +20,6 @@ import java.util.List;
 @RequestMapping(path = APIUrl.CUSTOMER_API)
 public class CustomerController {
     private final CustomerService customerService;
-    @PostMapping
-    public ResponseEntity<CommonResponse<Customer>> addCustomer(@RequestBody Customer customer) {
-        Customer customerAdded = customerService.addCustomer(customer);
-        CommonResponse<Customer> response = CommonResponse.<Customer>builder()
-                .statusCode(HttpStatus.CREATED.value())
-                .message("Data Customer Added")
-                .data(customerAdded).build();
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
-    }
 
     @GetMapping(path = "/{id}")
     public ResponseEntity<CommonResponse<Customer>> getCustomerById(@PathVariable String id) {
@@ -69,8 +60,8 @@ public class CustomerController {
     }
 
     @PutMapping
-    public ResponseEntity<CommonResponse<Customer>> updateCustomer(@RequestBody Customer product) {
-        Customer update = customerService.updateCustomer(product);
+    public ResponseEntity<CommonResponse<Customer>> updateCustomer(@RequestBody Customer customer) {
+        Customer update = customerService.updateCustomer(customer);
         CommonResponse<Customer> response = CommonResponse.<Customer>builder()
                 .statusCode(HttpStatus.ACCEPTED.value())
                 .message("Data Customer Updated")

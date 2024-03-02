@@ -1,7 +1,11 @@
 package com.enigma.wmbapi.controller;
 
 import com.enigma.wmbapi.constant.APIUrl;
+import com.enigma.wmbapi.dto.request.AuthRequest;
+import com.enigma.wmbapi.dto.request.RegisterRequest;
 import com.enigma.wmbapi.dto.response.CommonResponse;
+import com.enigma.wmbapi.dto.response.LoginResponse;
+import com.enigma.wmbapi.dto.response.RegisterResponse;
 import com.enigma.wmbapi.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -18,10 +22,10 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthController {
     private final AuthService authService;
     @PostMapping(path = "/register", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<CommonResponse<?>> registerUser(@RequestBody AuthRequest authRequest){
+    public ResponseEntity<CommonResponse<?>> registerUser(@RequestBody RegisterRequest request){
         CommonResponse<RegisterResponse> response = CommonResponse.<RegisterResponse>builder()
-                .statusCode(HttpStatus.CREATED.value()).message("successfully create new account")
-                .data(authService.register(authRequest)).build();
+                .statusCode(HttpStatus.CREATED.value()).message("Successfully Create New Account")
+                .data(authService.register(request)).build();
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
     @PostMapping(value = "/login", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)

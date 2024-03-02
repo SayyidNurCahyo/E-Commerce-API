@@ -11,6 +11,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 @Service
@@ -18,16 +19,19 @@ import org.springframework.web.server.ResponseStatusException;
 public class TableServiceImpl implements TableService {
     private final TableRepository tableRepository;
 
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public Table addTable(Table table) {
         return tableRepository.saveAndFlush(table);
     }
 
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public Table getTableById(String id) {
         return tableRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"Table Not Found"));
     }
 
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public Page<Table> getAllTable(SearchTableRequest request) {
         if (request.getPage()<1) request.setPage(1);
@@ -37,12 +41,14 @@ public class TableServiceImpl implements TableService {
         return tableRepository.findAll(page);
     }
 
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public Table updateTable(Table table) {
         tableRepository.findById(table.getId()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"Table Not Found"));
         return tableRepository.saveAndFlush(table);
     }
 
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public Table deleteById(String id) {
         Table table = tableRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"Table Not Found"));

@@ -11,5 +11,5 @@ import java.util.List;
 @Builder
 public class RegisterResponse {
     private String username;
-    private String role;
+    private List<String> roles;
 }

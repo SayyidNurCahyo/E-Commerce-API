@@ -7,11 +7,9 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class SearchCustomerRequest {
-    private Integer size;
-    private Integer page;
-    private String sortBy;
-    private String direction;
+public class RegisterRequest {
+    private String username;
+    private String password;
     private String name;
     private String phone;
 }
