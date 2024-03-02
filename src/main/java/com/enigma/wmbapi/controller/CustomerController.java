@@ -2,6 +2,7 @@ package com.enigma.wmbapi.controller;
 
 import com.enigma.wmbapi.constant.APIUrl;
 import com.enigma.wmbapi.dto.request.SearchCustomerRequest;
+import com.enigma.wmbapi.dto.request.UpdateCustomerRequest;
 import com.enigma.wmbapi.dto.response.PagingResponse;
 import com.enigma.wmbapi.entity.Customer;
 import com.enigma.wmbapi.service.CustomerService;
@@ -61,7 +62,7 @@ public class CustomerController {
     }
 
     @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<CommonResponse<Customer>> updateCustomer(@RequestBody Customer customer) {
+    public ResponseEntity<CommonResponse<Customer>> updateCustomer(@RequestBody UpdateCustomerRequest customer) {
         Customer update = customerService.updateCustomer(customer);
         CommonResponse<Customer> response = CommonResponse.<Customer>builder()
                 .statusCode(HttpStatus.ACCEPTED.value())

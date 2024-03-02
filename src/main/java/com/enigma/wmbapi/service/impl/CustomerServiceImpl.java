@@ -1,9 +1,13 @@
 package com.enigma.wmbapi.service.impl;
 
 import com.enigma.wmbapi.dto.request.SearchCustomerRequest;
+import com.enigma.wmbapi.dto.request.UpdateCustomerRequest;
 import com.enigma.wmbapi.entity.Customer;
+import com.enigma.wmbapi.entity.UserAccount;
 import com.enigma.wmbapi.repository.CustomerRepository;
+import com.enigma.wmbapi.repository.UserAccountRepository;
 import com.enigma.wmbapi.service.CustomerService;
+import com.enigma.wmbapi.util.ValidationUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -18,11 +22,13 @@ import org.springframework.web.server.ResponseStatusException;
 @RequiredArgsConstructor
 public class CustomerServiceImpl implements CustomerService {
     private final CustomerRepository customerRepository;
+    private final ValidationUtil validationUtil;
+    private final UserAccountRepository userAccountRepository;
 
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public Customer addCustomer(Customer customer) {
-        return customerRepository.saveAndFlush(customer);
+    public void addCustomer(Customer customer) {
+        customerRepository.saveAndFlush(customer);
     }
 
     @Transactional(rollbackFor = Exception.class)
@@ -46,11 +52,13 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public Customer updateCustomer(Customer customer) {
-        Customer cust = customerRepository.findById(customer.getId()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"Customer Not Found"));
-//        cust.setName(customer.getName());
-//        cust.setPhone(customer.getPhone());
-        return customerRepository.saveAndFlush(customer);
+    public Customer updateCustomer(UpdateCustomerRequest request) {
+        validationUtil.validate(request);
+        Customer customer = customerRepository.findById(request.getId()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"Customer Not Found"));
+        customer.getUserAccount().setUsername(request.getUsername());
+        Customer customerNew = Customer.builder().id(customer.getId()).name(customer.getName())
+                .phone(customer.getPhone()).userAccount(customer.getUserAccount()).build();
+        return customerRepository.saveAndFlush(customerNew);
     }
 
     @Transactional(rollbackFor = Exception.class)
