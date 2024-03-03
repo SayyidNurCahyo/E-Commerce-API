@@ -3,6 +3,7 @@ package com.enigma.wmbapi.controller;
 import com.enigma.wmbapi.constant.APIUrl;
 import com.enigma.wmbapi.dto.request.SearchCustomerRequest;
 import com.enigma.wmbapi.dto.request.UpdateCustomerRequest;
+import com.enigma.wmbapi.dto.response.CustomerResponse;
 import com.enigma.wmbapi.dto.response.PagingResponse;
 import com.enigma.wmbapi.entity.Customer;
 import com.enigma.wmbapi.service.CustomerService;
@@ -12,9 +13,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.web.bind.annotation.*;
 import com.enigma.wmbapi.dto.response.CommonResponse;
 
+import java.util.Currency;
 import java.util.List;
 
 @RestController
@@ -24,17 +27,31 @@ public class CustomerController {
     private final CustomerService customerService;
 
     @GetMapping(path = "/{id}")
-    public ResponseEntity<CommonResponse<Customer>> getCustomerById(@PathVariable String id) {
+    public ResponseEntity<CommonResponse<CustomerResponse>> getCustomerById(@PathVariable String id) {
         Customer customer = customerService.getCustomerById(id);
-        CommonResponse<Customer> response = CommonResponse.<Customer>builder()
+        CustomerResponse customerResponse;
+        if(customer.getUserAccount()==null){
+            customerResponse = CustomerResponse.builder()
+                    .id(customer.getId()).name(customer.getName()).phone(customer.getPhone()).build();
+        }else {
+            customerResponse = CustomerResponse.builder()
+                    .id(customer.getId())
+                    .name(customer.getName())
+                    .phone(customer.getPhone())
+                    .username(customer.getUserAccount().getUsername())
+                    .password(customer.getUserAccount().getPassword())
+                    .role(customer.getUserAccount().getAuthorities().stream().map(GrantedAuthority::getAuthority).toList())
+                    .build();
+        }
+        CommonResponse<CustomerResponse> response = CommonResponse.<CustomerResponse>builder()
                 .statusCode(HttpStatus.OK.value())
                 .message("Data Customer Exists")
-                .data(customer).build();
+                .data(customerResponse).build();
         return ResponseEntity.ok(response);
     }
 
     @GetMapping
-    public ResponseEntity<CommonResponse<List<Customer>>> getAllCustomer(
+    public ResponseEntity<CommonResponse<List<CustomerResponse>>> getAllCustomer(
             @RequestParam(name = "page", defaultValue = "1") Integer page,
             @RequestParam(name = "size", defaultValue = "5") Integer size,
             @RequestParam(name = "sortBy", defaultValue = "name") String sortBy,
@@ -46,6 +63,17 @@ public class CustomerController {
                 .page(page).size(size).sortBy(sortBy).direction(direction)
                 .name(name).phone(phone).build();
         Page<Customer> customers = customerService.getAllCustomer(request);
+        Page<CustomerResponse> customerResponses = customers.map(customer -> customer.getUserAccount() == null ?
+                        CustomerResponse.builder()
+                                .id(customer.getId()).name(customer.getName())
+                                .phone(customer.getPhone()).build() :
+                        CustomerResponse.builder()
+                                .id(customer.getId()).name(customer.getName())
+                                .phone(customer.getPhone())
+                                .username(customer.getUserAccount().getUsername())
+                                .password(customer.getUserAccount().getPassword())
+                                .role(customer.getUserAccount().getAuthorities().stream().map(GrantedAuthority::getAuthority).toList())
+                                .build());
         PagingResponse pagingResponse = PagingResponse.builder()
                 .totalPages(customers.getTotalPages())
                 .totalElement(customers.getTotalElements())
@@ -53,31 +81,59 @@ public class CustomerController {
                 .size(customers.getPageable().getPageSize())
                 .hasNext(customers.hasNext())
                 .hasPrevious(customers.hasPrevious()).build();
-        CommonResponse<List<Customer>> response = CommonResponse.<List<Customer>>builder()
+        CommonResponse<List<CustomerResponse>> response = CommonResponse.<List<CustomerResponse>>builder()
                 .statusCode(HttpStatus.OK.value())
                 .message("Data Customer Exists")
-                .data(customers.getContent())
+                .data(customerResponses.getContent())
                 .paging(pagingResponse).build();
         return ResponseEntity.ok(response);
     }
 
     @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<CommonResponse<Customer>> updateCustomer(@RequestBody UpdateCustomerRequest customer) {
-        Customer update = customerService.updateCustomer(customer);
-        CommonResponse<Customer> response = CommonResponse.<Customer>builder()
+    public ResponseEntity<CommonResponse<CustomerResponse>> updateCustomer(@RequestBody UpdateCustomerRequest request) {
+        Customer customer = customerService.updateCustomer(request);
+        CustomerResponse customerResponse;
+        if(customer.getUserAccount()==null){
+            customerResponse = CustomerResponse.builder()
+                    .id(customer.getId()).name(customer.getName()).phone(customer.getPhone()).build();
+        }else {
+            customerResponse = CustomerResponse.builder()
+                    .id(customer.getId())
+                    .name(customer.getName())
+                    .phone(customer.getPhone())
+                    .username(customer.getUserAccount().getUsername())
+                    .password(customer.getUserAccount().getPassword())
+                    .role(customer.getUserAccount().getAuthorities().stream().map(GrantedAuthority::getAuthority).toList())
+                    .build();
+        }
+        CommonResponse<CustomerResponse> response = CommonResponse.<CustomerResponse>builder()
                 .statusCode(HttpStatus.ACCEPTED.value())
                 .message("Data Customer Updated")
-                .data(update).build();
+                .data(customerResponse).build();
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(response);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<CommonResponse<Customer>> deleteById(@PathVariable String id) {
+    public ResponseEntity<CommonResponse<CustomerResponse>> deleteById(@PathVariable String id) {
         Customer customer = customerService.deleteById(id);
-        CommonResponse<Customer> response = CommonResponse.<Customer>builder()
+        CustomerResponse customerResponse;
+        if(customer.getUserAccount()==null){
+            customerResponse = CustomerResponse.builder()
+                    .id(customer.getId()).name(customer.getName()).phone(customer.getPhone()).build();
+        }else {
+            customerResponse = CustomerResponse.builder()
+                    .id(customer.getId())
+                    .name(customer.getName())
+                    .phone(customer.getPhone())
+                    .username(customer.getUserAccount().getUsername())
+                    .password(customer.getUserAccount().getPassword())
+                    .role(customer.getUserAccount().getAuthorities().stream().map(GrantedAuthority::getAuthority).toList())
+                    .build();
+        }
+        CommonResponse<CustomerResponse> response = CommonResponse.<CustomerResponse>builder()
                 .statusCode(HttpStatus.OK.value())
                 .message("Data Customer Deleted")
-                .data(customer).build();
+                .data(customerResponse).build();
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 }

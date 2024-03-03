@@ -2,6 +2,7 @@ package com.enigma.wmbapi.service.impl;
 
 import com.enigma.wmbapi.dto.request.SearchCustomerRequest;
 import com.enigma.wmbapi.dto.request.UpdateCustomerRequest;
+import com.enigma.wmbapi.dto.response.CustomerResponse;
 import com.enigma.wmbapi.entity.Customer;
 import com.enigma.wmbapi.entity.UserAccount;
 import com.enigma.wmbapi.repository.CustomerRepository;
@@ -14,6 +15,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
