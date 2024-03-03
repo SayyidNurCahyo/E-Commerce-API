@@ -1,5 +1,6 @@
 package com.enigma.wmbapi.service.impl;
 
+import com.enigma.wmbapi.constant.TransTypeId;
 import com.enigma.wmbapi.dto.request.GetTransTypeRequest;
 import com.enigma.wmbapi.entity.TransType;
 import com.enigma.wmbapi.repository.TransTypeRepository;
@@ -25,7 +26,7 @@ public class TransTypeServiceImpl implements TransTypeService {
 
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public TransType getTransTypeById(String id) {
+    public TransType getTransTypeById(TransTypeId id) {
         return transTypeRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"TransType Not Found"));
     }
 

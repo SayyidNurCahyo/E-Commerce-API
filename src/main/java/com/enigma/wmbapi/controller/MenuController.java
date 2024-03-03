@@ -86,7 +86,7 @@ public class MenuController {
         Menu menu = menuService.deleteById(id);
         CommonResponse<Menu> response = CommonResponse.<Menu>builder()
                 .statusCode(HttpStatus.OK.value())
-                .message("Data Menu Exists")
+                .message("Data Menu Deleted")
                 .data(menu).build();
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }

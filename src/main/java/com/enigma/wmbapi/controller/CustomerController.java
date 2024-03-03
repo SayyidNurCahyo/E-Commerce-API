@@ -76,7 +76,7 @@ public class CustomerController {
         Customer customer = customerService.deleteById(id);
         CommonResponse<Customer> response = CommonResponse.<Customer>builder()
                 .statusCode(HttpStatus.OK.value())
-                .message("Data Customer Exists")
+                .message("Data Customer Deleted")
                 .data(customer).build();
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }

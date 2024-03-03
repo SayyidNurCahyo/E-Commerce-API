@@ -6,6 +6,8 @@ import jakarta.persistence.*;
 import jakarta.persistence.Table;
 import lombok.*;
 
+import java.util.List;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -15,6 +17,10 @@ import lombok.*;
 @Table(name = ConstantTable.TRANS_TYPE)
 public class TransType {
     @Id
+//    @GeneratedValue(strategy = GenerationType.UUID)
+//    private String id;
+//    @ManyToMany(fetch = FetchType.EAGER)
+    @Enumerated(EnumType.STRING)
     private TransTypeId id;
 
     @Column(name = "description")

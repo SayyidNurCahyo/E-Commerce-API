@@ -1,6 +1,7 @@
 package com.enigma.wmbapi.controller;
 
 import com.enigma.wmbapi.constant.APIUrl;
+import com.enigma.wmbapi.constant.TransTypeId;
 import com.enigma.wmbapi.dto.response.CommonResponse;
 import com.enigma.wmbapi.dto.response.PagingResponse;
 import com.enigma.wmbapi.entity.TransType;
@@ -20,7 +21,7 @@ public class TransTypeController {
     private final TransTypeService transTypeService;
 
     @GetMapping(path = "/{id}")
-    public ResponseEntity<CommonResponse<TransType>> getTransTypeById(@PathVariable String id) {
+    public ResponseEntity<CommonResponse<TransType>> getTransTypeById(@PathVariable TransTypeId id) {
         TransType transType = transTypeService.getTransTypeById(id);
         CommonResponse<TransType> response = CommonResponse.<TransType>builder()
                 .statusCode(HttpStatus.OK.value())

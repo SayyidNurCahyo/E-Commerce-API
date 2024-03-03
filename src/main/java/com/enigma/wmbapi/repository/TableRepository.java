@@ -11,6 +11,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface TableRepository extends JpaRepository<Table, String> {
-    @Query(value = "SELECT * FROM m_table WHERE name = :name")
+    @Query(value = "SELECT * FROM m_table WHERE name = :name",nativeQuery = true)
     Page<Table> findTable(@Param("name") String name, Pageable pageable);
 }

@@ -83,7 +83,7 @@ public class TableController {
         Table table = tableService.deleteById(id);
         CommonResponse<Table> response = CommonResponse.<Table>builder()
                 .statusCode(HttpStatus.OK.value())
-                .message("Data Table Exists")
+                .message("Data Table Deleted")
                 .data(table).build();
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
