@@ -8,6 +8,7 @@ import lombok.*;
 @NoArgsConstructor
 @Builder
 public class TransactionDetailResponse {
+    private String detailId;
     private String menu;
     private Float menuQuantity;
     private Float menuPrice;
