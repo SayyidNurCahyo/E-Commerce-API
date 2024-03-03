@@ -4,6 +4,7 @@ import com.enigma.wmbapi.constant.APIUrl;
 import com.enigma.wmbapi.constant.TransTypeId;
 import com.enigma.wmbapi.dto.response.CommonResponse;
 import com.enigma.wmbapi.dto.response.PagingResponse;
+import com.enigma.wmbapi.dto.response.TransTypeResponse;
 import com.enigma.wmbapi.entity.TransType;
 import com.enigma.wmbapi.service.TransTypeService;
 import lombok.RequiredArgsConstructor;
@@ -21,22 +22,26 @@ public class TransTypeController {
     private final TransTypeService transTypeService;
 
     @GetMapping(path = "/{id}")
-    public ResponseEntity<CommonResponse<TransType>> getTransTypeById(@PathVariable TransTypeId id) {
+    public ResponseEntity<CommonResponse<TransTypeResponse>> getTransTypeById(@PathVariable TransTypeId id) {
         TransType transType = transTypeService.getTransTypeById(id);
-        CommonResponse<TransType> response = CommonResponse.<TransType>builder()
+        TransTypeResponse transTypeResponse = TransTypeResponse.builder().transTypeId(transType.getId())
+                .transTypeDescription(transType.getDescription()).build();
+        CommonResponse<TransTypeResponse> response = CommonResponse.<TransTypeResponse>builder()
                 .statusCode(HttpStatus.OK.value())
                 .message("Data TransType Exists")
-                .data(transType).build();
+                .data(transTypeResponse).build();
         return ResponseEntity.ok(response);
     }
 
     @GetMapping
-    public ResponseEntity<CommonResponse<List<TransType>>> getAllTransType() {
+    public ResponseEntity<CommonResponse<List<TransTypeResponse>>> getAllTransType() {
         List<TransType> transTypes = transTypeService.getAllTransType();
-        CommonResponse<List<TransType>> response = CommonResponse.<List<TransType>>builder()
+        List<TransTypeResponse> transTypeResponses = transTypes.stream().map(transType -> TransTypeResponse.builder().transTypeId(transType.getId())
+                .transTypeDescription(transType.getDescription()).build()).toList();
+        CommonResponse<List<TransTypeResponse>> response = CommonResponse.<List<TransTypeResponse>>builder()
                 .statusCode(HttpStatus.OK.value())
                 .message("Data TransType Exists")
-                .data(transTypes).build();
+                .data(transTypeResponses).build();
         return ResponseEntity.ok(response);
     }
 }

@@ -17,9 +17,6 @@ import java.util.List;
 @Table(name = ConstantTable.TRANS_TYPE)
 public class TransType {
     @Id
-//    @GeneratedValue(strategy = GenerationType.UUID)
-//    private String id;
-//    @ManyToMany(fetch = FetchType.EAGER)
     @Enumerated(EnumType.STRING)
     private TransTypeId id;
 
