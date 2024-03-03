@@ -6,6 +6,7 @@ import com.enigma.wmbapi.dto.request.SearchTableRequest;
 import com.enigma.wmbapi.dto.request.UpdateTableRequest;
 import com.enigma.wmbapi.dto.response.CommonResponse;
 import com.enigma.wmbapi.dto.response.PagingResponse;
+import com.enigma.wmbapi.dto.response.TableResponse;
 import com.enigma.wmbapi.entity.Table;
 import com.enigma.wmbapi.service.TableService;
 import lombok.RequiredArgsConstructor;
@@ -22,27 +23,29 @@ import java.util.List;
 public class TableController {
     private final TableService tableService;
     @PostMapping
-    public ResponseEntity<CommonResponse<Table>> addTable(@RequestBody NewTableRequest table) {
-        Table tableAdded = tableService.addTable(table);
-        CommonResponse<Table> response = CommonResponse.<Table>builder()
+    public ResponseEntity<CommonResponse<TableResponse>> addTable(@RequestBody NewTableRequest request) {
+        Table table = tableService.addTable(request);
+        TableResponse tableResponse = TableResponse.builder().tableId(table.getId()).tableName(table.getName()).build();
+        CommonResponse<TableResponse> response = CommonResponse.<TableResponse>builder()
                 .statusCode(HttpStatus.CREATED.value())
                 .message("Data Table Added")
-                .data(tableAdded).build();
+                .data(tableResponse).build();
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @GetMapping(path = "/{id}")
-    public ResponseEntity<CommonResponse<Table>> getTableById(@PathVariable String id) {
+    public ResponseEntity<CommonResponse<TableResponse>> getTableById(@PathVariable String id) {
         Table table = tableService.getTableById(id);
-        CommonResponse<Table> response = CommonResponse.<Table>builder()
+        TableResponse tableResponse = TableResponse.builder().tableId(table.getId()).tableName(table.getName()).build();
+        CommonResponse<TableResponse> response = CommonResponse.<TableResponse>builder()
                 .statusCode(HttpStatus.OK.value())
                 .message("Data Table Exists")
-                .data(table).build();
+                .data(tableResponse).build();
         return ResponseEntity.ok(response);
     }
 
     @GetMapping
-    public ResponseEntity<CommonResponse<List<Table>>> getAllTable(
+    public ResponseEntity<CommonResponse<List<TableResponse>>> getAllTable(
             @RequestParam(name = "page", defaultValue = "1") Integer page,
             @RequestParam(name = "size", defaultValue = "5") Integer size,
             @RequestParam(name = "sortBy", defaultValue = "name") String sortBy,
@@ -53,6 +56,7 @@ public class TableController {
                 .page(page).size(size).sortBy(sortBy).direction(direction)
                 .name(name).build();
         Page<Table> tables = tableService.getAllTable(request);
+        Page<TableResponse> tableResponses = tables.map(table -> TableResponse.builder().tableId(table.getId()).tableName(table.getName()).build());
         PagingResponse pagingResponse = PagingResponse.builder()
                 .totalPages(tables.getTotalPages())
                 .totalElement(tables.getTotalElements())
@@ -60,31 +64,33 @@ public class TableController {
                 .size(tables.getPageable().getPageSize())
                 .hasNext(tables.hasNext())
                 .hasPrevious(tables.hasPrevious()).build();
-        CommonResponse<List<Table>> response = CommonResponse.<List<Table>>builder()
+        CommonResponse<List<TableResponse>> response = CommonResponse.<List<TableResponse>>builder()
                 .statusCode(HttpStatus.OK.value())
                 .message("Data Table Exists")
-                .data(tables.getContent())
+                .data(tableResponses.getContent())
                 .paging(pagingResponse).build();
         return ResponseEntity.ok(response);
     }
 
     @PutMapping
-    public ResponseEntity<CommonResponse<Table>> updateTable(@RequestBody UpdateTableRequest request) {
-        Table update = tableService.updateTable(request);
-        CommonResponse<Table> response = CommonResponse.<Table>builder()
+    public ResponseEntity<CommonResponse<TableResponse>> updateTable(@RequestBody UpdateTableRequest request) {
+        Table table = tableService.updateTable(request);
+        TableResponse tableResponse = TableResponse.builder().tableId(table.getId()).tableName(table.getName()).build();
+        CommonResponse<TableResponse> response = CommonResponse.<TableResponse>builder()
                 .statusCode(HttpStatus.ACCEPTED.value())
                 .message("Data Table Updated")
-                .data(update).build();
+                .data(tableResponse).build();
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(response);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<CommonResponse<Table>> deleteById(@PathVariable String id) {
+    public ResponseEntity<CommonResponse<TableResponse>> deleteById(@PathVariable String id) {
         Table table = tableService.deleteById(id);
-        CommonResponse<Table> response = CommonResponse.<Table>builder()
+        TableResponse tableResponse = TableResponse.builder().tableId(table.getId()).tableName(table.getName()).build();
+        CommonResponse<TableResponse> response = CommonResponse.<TableResponse>builder()
                 .statusCode(HttpStatus.OK.value())
                 .message("Data Table Deleted")
-                .data(table).build();
+                .data(tableResponse).build();
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 }
