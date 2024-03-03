@@ -37,7 +37,7 @@ public class Transaction {
     private com.enigma.wmbapi.entity.Table table;
 
     @ManyToOne
-    @JoinColumn(name = "trans_type", referencedColumnName = "trans_type_id", nullable = false)
+    @JoinColumn(name = "trans_type", referencedColumnName = "id", nullable = false)
     private TransType transType;
 
     @OneToMany(mappedBy = "transaction", cascade = CascadeType.PERSIST)

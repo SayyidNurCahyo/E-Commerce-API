@@ -11,6 +11,7 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 public class NewTransactionRequest {
+    private String transactionDate;
     private String customerId;
     private String tableId;
     private TransTypeId transTypeId;
