@@ -32,15 +32,16 @@ public class CustomerController {
         CustomerResponse customerResponse;
         if(customer.getUserAccount()==null){
             customerResponse = CustomerResponse.builder()
-                    .id(customer.getId()).name(customer.getName()).phone(customer.getPhone()).build();
+                    .customerId(customer.getId()).customerName(customer.getName())
+                    .customerMobilePhone(customer.getPhone()).build();
         }else {
             customerResponse = CustomerResponse.builder()
-                    .id(customer.getId())
-                    .name(customer.getName())
-                    .phone(customer.getPhone())
-                    .username(customer.getUserAccount().getUsername())
-                    .password(customer.getUserAccount().getPassword())
-                    .role(customer.getUserAccount().getAuthorities().stream().map(GrantedAuthority::getAuthority).toList())
+                    .customerId(customer.getId())
+                    .customerName(customer.getName())
+                    .customerMobilePhone(customer.getPhone())
+                    .customerUsername(customer.getUserAccount().getUsername())
+                    .customerPassword(customer.getUserAccount().getPassword())
+                    .customerRole(customer.getUserAccount().getAuthorities().stream().map(GrantedAuthority::getAuthority).toList())
                     .build();
         }
         CommonResponse<CustomerResponse> response = CommonResponse.<CustomerResponse>builder()
@@ -65,14 +66,14 @@ public class CustomerController {
         Page<Customer> customers = customerService.getAllCustomer(request);
         Page<CustomerResponse> customerResponses = customers.map(customer -> customer.getUserAccount() == null ?
                         CustomerResponse.builder()
-                                .id(customer.getId()).name(customer.getName())
-                                .phone(customer.getPhone()).build() :
+                                .customerId(customer.getId()).customerName(customer.getName())
+                                .customerMobilePhone(customer.getPhone()).build() :
                         CustomerResponse.builder()
-                                .id(customer.getId()).name(customer.getName())
-                                .phone(customer.getPhone())
-                                .username(customer.getUserAccount().getUsername())
-                                .password(customer.getUserAccount().getPassword())
-                                .role(customer.getUserAccount().getAuthorities().stream().map(GrantedAuthority::getAuthority).toList())
+                                .customerId(customer.getId()).customerName(customer.getName())
+                                .customerMobilePhone(customer.getPhone())
+                                .customerUsername(customer.getUserAccount().getUsername())
+                                .customerPassword(customer.getUserAccount().getPassword())
+                                .customerRole(customer.getUserAccount().getAuthorities().stream().map(GrantedAuthority::getAuthority).toList())
                                 .build());
         PagingResponse pagingResponse = PagingResponse.builder()
                 .totalPages(customers.getTotalPages())
@@ -95,15 +96,15 @@ public class CustomerController {
         CustomerResponse customerResponse;
         if(customer.getUserAccount()==null){
             customerResponse = CustomerResponse.builder()
-                    .id(customer.getId()).name(customer.getName()).phone(customer.getPhone()).build();
+                    .customerId(customer.getId()).customerName(customer.getName()).customerMobilePhone(customer.getPhone()).build();
         }else {
             customerResponse = CustomerResponse.builder()
-                    .id(customer.getId())
-                    .name(customer.getName())
-                    .phone(customer.getPhone())
-                    .username(customer.getUserAccount().getUsername())
-                    .password(customer.getUserAccount().getPassword())
-                    .role(customer.getUserAccount().getAuthorities().stream().map(GrantedAuthority::getAuthority).toList())
+                    .customerId(customer.getId())
+                    .customerName(customer.getName())
+                    .customerMobilePhone(customer.getPhone())
+                    .customerUsername(customer.getUserAccount().getUsername())
+                    .customerPassword(customer.getUserAccount().getPassword())
+                    .customerRole(customer.getUserAccount().getAuthorities().stream().map(GrantedAuthority::getAuthority).toList())
                     .build();
         }
         CommonResponse<CustomerResponse> response = CommonResponse.<CustomerResponse>builder()
@@ -119,15 +120,15 @@ public class CustomerController {
         CustomerResponse customerResponse;
         if(customer.getUserAccount()==null){
             customerResponse = CustomerResponse.builder()
-                    .id(customer.getId()).name(customer.getName()).phone(customer.getPhone()).build();
+                    .customerId(customer.getId()).customerName(customer.getName()).customerMobilePhone(customer.getPhone()).build();
         }else {
             customerResponse = CustomerResponse.builder()
-                    .id(customer.getId())
-                    .name(customer.getName())
-                    .phone(customer.getPhone())
-                    .username(customer.getUserAccount().getUsername())
-                    .password(customer.getUserAccount().getPassword())
-                    .role(customer.getUserAccount().getAuthorities().stream().map(GrantedAuthority::getAuthority).toList())
+                    .customerId(customer.getId())
+                    .customerName(customer.getName())
+                    .customerMobilePhone(customer.getPhone())
+                    .customerUsername(customer.getUserAccount().getUsername())
+                    .customerPassword(customer.getUserAccount().getPassword())
+                    .customerRole(customer.getUserAccount().getAuthorities().stream().map(GrantedAuthority::getAuthority).toList())
                     .build();
         }
         CommonResponse<CustomerResponse> response = CommonResponse.<CustomerResponse>builder()

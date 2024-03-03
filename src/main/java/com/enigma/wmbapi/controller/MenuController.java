@@ -5,6 +5,7 @@ import com.enigma.wmbapi.dto.request.NewMenuRequest;
 import com.enigma.wmbapi.dto.request.SearchMenuRequest;
 import com.enigma.wmbapi.dto.request.UpdateMenuRequest;
 import com.enigma.wmbapi.dto.response.CommonResponse;
+import com.enigma.wmbapi.dto.response.MenuResponse;
 import com.enigma.wmbapi.dto.response.PagingResponse;
 import com.enigma.wmbapi.entity.Menu;
 import com.enigma.wmbapi.entity.Menu;
@@ -24,27 +25,35 @@ import java.util.List;
 public class MenuController {
     private final MenuService menuService;
     @PostMapping
-    public ResponseEntity<CommonResponse<Menu>> addMenu(@RequestBody NewMenuRequest menu) {
+    public ResponseEntity<CommonResponse<MenuResponse>> addMenu(@RequestBody NewMenuRequest menu) {
         Menu menuAdded = menuService.addMenu(menu);
-        CommonResponse<Menu> response = CommonResponse.<Menu>builder()
+        MenuResponse menuResponse = MenuResponse.builder()
+                .menuId(menuAdded.getId())
+                .menuName(menuAdded.getName())
+                .menuPrice(menuAdded.getPrice()).build();
+        CommonResponse<MenuResponse> response = CommonResponse.<MenuResponse>builder()
                 .statusCode(HttpStatus.CREATED.value())
                 .message("Data Menu Added")
-                .data(menuAdded).build();
+                .data(menuResponse).build();
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @GetMapping(path = "/{id}")
-    public ResponseEntity<CommonResponse<Menu>> getMenuById(@PathVariable String id) {
+    public ResponseEntity<CommonResponse<MenuResponse>> getMenuById(@PathVariable String id) {
         Menu menu = menuService.getMenuById(id);
-        CommonResponse<Menu> response = CommonResponse.<Menu>builder()
+        MenuResponse menuResponse = MenuResponse.builder()
+                .menuId(menu.getId())
+                .menuName(menu.getName())
+                .menuPrice(menu.getPrice()).build();
+        CommonResponse<MenuResponse> response = CommonResponse.<MenuResponse>builder()
                 .statusCode(HttpStatus.OK.value())
                 .message("Data Menu Exists")
-                .data(menu).build();
+                .data(menuResponse).build();
         return ResponseEntity.ok(response);
     }
 
     @GetMapping
-    public ResponseEntity<CommonResponse<List<Menu>>> getAllMenu(
+    public ResponseEntity<CommonResponse<List<MenuResponse>>> getAllMenu(
             @RequestParam(name = "page", defaultValue = "1") Integer page,
             @RequestParam(name = "size", defaultValue = "5") Integer size,
             @RequestParam(name = "sortBy", defaultValue = "name") String sortBy,
@@ -56,6 +65,10 @@ public class MenuController {
                 .page(page).size(size).sortBy(sortBy).direction(direction)
                 .name(name).price(price).build();
         Page<Menu> menus = menuService.getAllMenu(request);
+        Page<MenuResponse> menuResponses = menus.map(menu -> MenuResponse.builder()
+                .menuId(menu.getId())
+                .menuName(menu.getName())
+                .menuPrice(menu.getPrice()).build());
         PagingResponse pagingResponse = PagingResponse.builder()
                 .totalPages(menus.getTotalPages())
                 .totalElement(menus.getTotalElements())
@@ -63,31 +76,39 @@ public class MenuController {
                 .size(menus.getPageable().getPageSize())
                 .hasNext(menus.hasNext())
                 .hasPrevious(menus.hasPrevious()).build();
-        CommonResponse<List<Menu>> response = CommonResponse.<List<Menu>>builder()
+        CommonResponse<List<MenuResponse>> response = CommonResponse.<List<MenuResponse>>builder()
                 .statusCode(HttpStatus.OK.value())
                 .message("Data Menu Exists")
-                .data(menus.getContent())
+                .data(menuResponses.getContent())
                 .paging(pagingResponse).build();
         return ResponseEntity.ok(response);
     }
 
     @PutMapping
-    public ResponseEntity<CommonResponse<Menu>> updateMenu(@RequestBody UpdateMenuRequest request) {
-        Menu update = menuService.updateMenu(request);
-        CommonResponse<Menu> response = CommonResponse.<Menu>builder()
+    public ResponseEntity<CommonResponse<MenuResponse>> updateMenu(@RequestBody UpdateMenuRequest request) {
+        Menu menu = menuService.updateMenu(request);
+        MenuResponse menuResponse = MenuResponse.builder()
+                .menuId(menu.getId())
+                .menuName(menu.getName())
+                .menuPrice(menu.getPrice()).build();
+        CommonResponse<MenuResponse> response = CommonResponse.<MenuResponse>builder()
                 .statusCode(HttpStatus.ACCEPTED.value())
                 .message("Data Menu Updated")
-                .data(update).build();
+                .data(menuResponse).build();
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(response);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<CommonResponse<Menu>> deleteById(@PathVariable String id) {
+    public ResponseEntity<CommonResponse<MenuResponse>> deleteById(@PathVariable String id) {
         Menu menu = menuService.deleteById(id);
-        CommonResponse<Menu> response = CommonResponse.<Menu>builder()
+        MenuResponse menuResponse = MenuResponse.builder()
+                .menuId(menu.getId())
+                .menuName(menu.getName())
+                .menuPrice(menu.getPrice()).build();
+        CommonResponse<MenuResponse> response = CommonResponse.<MenuResponse>builder()
                 .statusCode(HttpStatus.OK.value())
                 .message("Data Menu Deleted")
-                .data(menu).build();
+                .data(menuResponse).build();
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 }

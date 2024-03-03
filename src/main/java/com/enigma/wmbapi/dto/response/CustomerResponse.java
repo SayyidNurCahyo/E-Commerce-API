@@ -11,10 +11,10 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 public class CustomerResponse {
-    private String id;
-    private String name;
-    private String phone;
-    private String username;
-    private String password;
-    private List<String> role;
+    private String customerId;
+    private String customerName;
+    private String customerMobilePhone;
+    private String customerUsername;
+    private String customerPassword;
+    private List<String> customerRole;
 }
