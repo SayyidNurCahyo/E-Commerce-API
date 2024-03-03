@@ -56,25 +56,19 @@ public class AuthServiceImpl implements AuthService {
 
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public RegisterResponse registerAdmin(RegisterRequest request) {
-//        Role role=roleService.getOrSave(UserRole.ROLE_ADMIN);
-//        String hashPassword = passwordEncoder.encode(request.getPassword());
-//        UserAccount account = UserAccount.builder()
-//                .username(request.getUsername())
-//                .password(hashPassword)
-//                .roles(List.of(role))
-//                .isEnabled(true).build();
-//        userAccountRepository.saveAndFlush(account);
-//        Customer customer = Customer.builder()
-//                .name(request.getName())
-//                .phone(request.getPhone())
-//                .userAccount(account).build();
-//        customerService.addCustomer(customer);
-//        List<String> roleAuth = account.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList();
-//        return RegisterResponse.builder()
-//                .username(account.getUsername())
-//                .roles(roleAuth).build();
-        return null;
+    public RegisterResponse registerAdmin(AuthRequest request) {
+        Role role=roleService.getOrSave(UserRole.ROLE_ADMIN);
+        String hashPassword = passwordEncoder.encode(request.getPassword());
+        UserAccount account = UserAccount.builder()
+                .username(request.getUsername())
+                .password(hashPassword)
+                .roles(List.of(role))
+                .isEnabled(true).build();
+        userAccountRepository.saveAndFlush(account);
+        List<String> roleAuth = account.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList();
+        return RegisterResponse.builder()
+                .username(account.getUsername())
+                .roles(roleAuth).build();
     }
 
     @Transactional(rollbackFor = Exception.class)

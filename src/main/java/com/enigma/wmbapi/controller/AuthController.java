@@ -28,6 +28,13 @@ public class AuthController {
                 .data(authService.register(request)).build();
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
+    @PostMapping(path = "/registerAdmin", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<CommonResponse<?>> registerUser(@RequestBody AuthRequest request){
+        CommonResponse<RegisterResponse> response = CommonResponse.<RegisterResponse>builder()
+                .statusCode(HttpStatus.CREATED.value()).message("Successfully Create New Account")
+                .data(authService.registerAdmin(request)).build();
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
     @PostMapping(value = "/login", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<CommonResponse<?>> login(@RequestBody AuthRequest request){
         LoginResponse loginResponse = authService.login(request);
