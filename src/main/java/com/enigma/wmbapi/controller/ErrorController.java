@@ -31,11 +31,11 @@ public class ErrorController {
     public ResponseEntity<CommonResponse<?>> dataIntegrityViolationException(DataIntegrityViolationException e){
         CommonResponse.CommonResponseBuilder<Object> builder = CommonResponse.builder();
         HttpStatus httpStatus = null;
-        if(e.getMessage().contains("Foreign Key Constraint")){
+        if(e.getMessage().contains("foreign key constraint")){
             builder.statusCode(HttpStatus.BAD_REQUEST.value());
             builder.message("Can't Delete Data Caused By Any References in Another Table");
             httpStatus = HttpStatus.BAD_REQUEST;
-        } else if (e.getMessage().contains("Unique Constraint") || e.getMessage().contains("Duplicate Entry")) {
+        } else if (e.getMessage().contains("unique constraint") || e.getMessage().contains("duplicate")) {
             builder.statusCode(HttpStatus.CONFLICT.value());
             builder.message("Data Already Exists");
             httpStatus = HttpStatus.CONFLICT;

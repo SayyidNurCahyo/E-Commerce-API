@@ -13,6 +13,7 @@ import com.enigma.wmbapi.service.AuthService;
 import com.enigma.wmbapi.service.CustomerService;
 import com.enigma.wmbapi.service.JwtService;
 import com.enigma.wmbapi.service.RoleService;
+import com.enigma.wmbapi.util.ValidationUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -31,10 +32,12 @@ public class AuthServiceImpl implements AuthService {
     private final PasswordEncoder passwordEncoder;
     private final CustomerService customerService;
     private final JwtService jwtService;
+    private final ValidationUtil validationUtil;
 
     @Transactional(rollbackFor = Exception.class)
     @Override
     public RegisterResponse register(RegisterRequest request) throws DataIntegrityViolationException {
+        validationUtil.validate(request);
         Role role=roleService.getOrSave(UserRole.ROLE_CUSTOMER);
         String hashPassword = passwordEncoder.encode(request.getPassword());
         UserAccount account = UserAccount.builder()
@@ -57,6 +60,7 @@ public class AuthServiceImpl implements AuthService {
     @Transactional(rollbackFor = Exception.class)
     @Override
     public RegisterResponse registerAdmin(AuthRequest request) {
+        validationUtil.validate(request);
         Role role=roleService.getOrSave(UserRole.ROLE_ADMIN);
         String hashPassword = passwordEncoder.encode(request.getPassword());
         UserAccount account = UserAccount.builder()
