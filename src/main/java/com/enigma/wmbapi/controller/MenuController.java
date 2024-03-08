@@ -1,6 +1,7 @@
 package com.enigma.wmbapi.controller;
 
 import com.enigma.wmbapi.constant.APIUrl;
+import com.enigma.wmbapi.constant.ResponseMessage;
 import com.enigma.wmbapi.dto.request.NewMenuRequest;
 import com.enigma.wmbapi.dto.request.SearchMenuRequest;
 import com.enigma.wmbapi.dto.request.UpdateMenuRequest;
@@ -15,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -24,6 +26,8 @@ import java.util.List;
 @RequestMapping(path = APIUrl.MENU_API)
 public class MenuController {
     private final MenuService menuService;
+
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN')")
     @PostMapping
     public ResponseEntity<CommonResponse<MenuResponse>> addMenu(@RequestBody NewMenuRequest menu) {
         Menu menuAdded = menuService.addMenu(menu);
@@ -33,7 +37,7 @@ public class MenuController {
                 .menuPrice(menuAdded.getPrice()).build();
         CommonResponse<MenuResponse> response = CommonResponse.<MenuResponse>builder()
                 .statusCode(HttpStatus.CREATED.value())
-                .message("Data Menu Added")
+                .message(ResponseMessage.SUCCESS_SAVE_DATA)
                 .data(menuResponse).build();
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
@@ -47,7 +51,7 @@ public class MenuController {
                 .menuPrice(menu.getPrice()).build();
         CommonResponse<MenuResponse> response = CommonResponse.<MenuResponse>builder()
                 .statusCode(HttpStatus.OK.value())
-                .message("Data Menu Exists")
+                .message(ResponseMessage.SUCCESS_GET_DATA)
                 .data(menuResponse).build();
         return ResponseEntity.ok(response);
     }
@@ -78,12 +82,13 @@ public class MenuController {
                 .hasPrevious(menus.hasPrevious()).build();
         CommonResponse<List<MenuResponse>> response = CommonResponse.<List<MenuResponse>>builder()
                 .statusCode(HttpStatus.OK.value())
-                .message("Data Menu Exists")
+                .message(ResponseMessage.SUCCESS_GET_DATA)
                 .data(menuResponses.getContent())
                 .paging(pagingResponse).build();
         return ResponseEntity.ok(response);
     }
 
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN')")
     @PutMapping
     public ResponseEntity<CommonResponse<MenuResponse>> updateMenu(@RequestBody UpdateMenuRequest request) {
         Menu menu = menuService.updateMenu(request);
@@ -93,11 +98,12 @@ public class MenuController {
                 .menuPrice(menu.getPrice()).build();
         CommonResponse<MenuResponse> response = CommonResponse.<MenuResponse>builder()
                 .statusCode(HttpStatus.ACCEPTED.value())
-                .message("Data Menu Updated")
+                .message(ResponseMessage.SUCCESS_UPDATE_DATA)
                 .data(menuResponse).build();
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(response);
     }
 
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<CommonResponse<MenuResponse>> deleteById(@PathVariable String id) {
         Menu menu = menuService.deleteById(id);
@@ -107,7 +113,7 @@ public class MenuController {
                 .menuPrice(menu.getPrice()).build();
         CommonResponse<MenuResponse> response = CommonResponse.<MenuResponse>builder()
                 .statusCode(HttpStatus.OK.value())
-                .message("Data Menu Deleted")
+                .message(ResponseMessage.SUCCESS_DELETE_DATA)
                 .data(menuResponse).build();
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }

@@ -24,21 +24,15 @@ public class TransTypeServiceImpl implements TransTypeService {
     private final TransTypeRepository transTypeRepository;
     private final ValidationUtil validationUtil;
 
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional(readOnly = true)
     @Override
     public TransType getTransTypeById(TransTypeId id) {
         return transTypeRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"TransType Not Found"));
     }
 
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional(readOnly = true)
     @Override
     public List<TransType> getAllTransType() {
         return transTypeRepository.findAll();
-    }
-
-    @Override
-    public TransType getOrSave(GetTransTypeRequest transType) {
-        validationUtil.validate(transType);
-        return transTypeRepository.findById(transType.getId()).orElseGet(()->transTypeRepository.saveAndFlush(TransType.builder().id(transType.getId()).description(transType.getDescription()).build()));
     }
 }

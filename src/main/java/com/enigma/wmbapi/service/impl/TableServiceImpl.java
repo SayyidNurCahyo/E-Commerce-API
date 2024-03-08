@@ -31,13 +31,13 @@ public class TableServiceImpl implements TableService {
         return tableRepository.saveAndFlush(table);
     }
 
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional(readOnly = true)
     @Override
     public Table getTableById(String id) {
         return tableRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"Table Not Found"));
     }
 
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional(readOnly = true)
     @Override
     public Page<Table> getAllTable(SearchTableRequest request) {
         if (request.getPage()<1) request.setPage(1);

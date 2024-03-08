@@ -33,13 +33,13 @@ public class CustomerServiceImpl implements CustomerService {
         customerRepository.saveAndFlush(customer);
     }
 
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional(readOnly = true)
     @Override
     public Customer getCustomerById(String id) {
         return customerRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"Customer Not Found"));
     }
 
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional(readOnly = true)
     @Override
     public Page<Customer> getAllCustomer(SearchCustomerRequest request) {
         if (request.getPage()<1) request.setPage(1);

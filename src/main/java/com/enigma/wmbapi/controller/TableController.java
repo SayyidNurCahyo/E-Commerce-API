@@ -1,6 +1,7 @@
 package com.enigma.wmbapi.controller;
 
 import com.enigma.wmbapi.constant.APIUrl;
+import com.enigma.wmbapi.constant.ResponseMessage;
 import com.enigma.wmbapi.dto.request.NewTableRequest;
 import com.enigma.wmbapi.dto.request.SearchTableRequest;
 import com.enigma.wmbapi.dto.request.UpdateTableRequest;
@@ -13,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,13 +24,15 @@ import java.util.List;
 @RequestMapping(path = APIUrl.TABLE_API)
 public class TableController {
     private final TableService tableService;
+
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN')")
     @PostMapping
     public ResponseEntity<CommonResponse<TableResponse>> addTable(@RequestBody NewTableRequest request) {
         Table table = tableService.addTable(request);
         TableResponse tableResponse = TableResponse.builder().tableId(table.getId()).tableName(table.getName()).build();
         CommonResponse<TableResponse> response = CommonResponse.<TableResponse>builder()
                 .statusCode(HttpStatus.CREATED.value())
-                .message("Data Table Added")
+                .message(ResponseMessage.SUCCESS_SAVE_DATA)
                 .data(tableResponse).build();
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
@@ -39,7 +43,7 @@ public class TableController {
         TableResponse tableResponse = TableResponse.builder().tableId(table.getId()).tableName(table.getName()).build();
         CommonResponse<TableResponse> response = CommonResponse.<TableResponse>builder()
                 .statusCode(HttpStatus.OK.value())
-                .message("Data Table Exists")
+                .message(ResponseMessage.SUCCESS_GET_DATA)
                 .data(tableResponse).build();
         return ResponseEntity.ok(response);
     }
@@ -66,30 +70,32 @@ public class TableController {
                 .hasPrevious(tables.hasPrevious()).build();
         CommonResponse<List<TableResponse>> response = CommonResponse.<List<TableResponse>>builder()
                 .statusCode(HttpStatus.OK.value())
-                .message("Data Table Exists")
+                .message(ResponseMessage.SUCCESS_GET_DATA)
                 .data(tableResponses.getContent())
                 .paging(pagingResponse).build();
         return ResponseEntity.ok(response);
     }
 
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN')")
     @PutMapping
     public ResponseEntity<CommonResponse<TableResponse>> updateTable(@RequestBody UpdateTableRequest request) {
         Table table = tableService.updateTable(request);
         TableResponse tableResponse = TableResponse.builder().tableId(table.getId()).tableName(table.getName()).build();
         CommonResponse<TableResponse> response = CommonResponse.<TableResponse>builder()
                 .statusCode(HttpStatus.ACCEPTED.value())
-                .message("Data Table Updated")
+                .message(ResponseMessage.SUCCESS_UPDATE_DATA)
                 .data(tableResponse).build();
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(response);
     }
 
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<CommonResponse<TableResponse>> deleteById(@PathVariable String id) {
         Table table = tableService.deleteById(id);
         TableResponse tableResponse = TableResponse.builder().tableId(table.getId()).tableName(table.getName()).build();
         CommonResponse<TableResponse> response = CommonResponse.<TableResponse>builder()
                 .statusCode(HttpStatus.OK.value())
-                .message("Data Table Deleted")
+                .message(ResponseMessage.SUCCESS_DELETE_DATA)
                 .data(tableResponse).build();
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }

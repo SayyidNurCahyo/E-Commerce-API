@@ -11,4 +11,7 @@ public class ResponseMessage {
     public static final String ERROR_CREATING_JWT = "Error While Creating JWT Token";
     public static final String SUCCESS_LOGIN = "Login Successfully";
     public static final String ERROR_INVALID_CONTENT_TYPE = "Invalid Resource Type";
+    public static final String FOREIGN_KEY_CONSTRAINT = "Can't Delete Data Caused By Any References in Another Table";
+    public static final String DUPLICATE_CONSTRAINT = "Data Already Exists";
+
 }

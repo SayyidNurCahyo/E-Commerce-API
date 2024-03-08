@@ -1,5 +1,6 @@
 package com.enigma.wmbapi.entity;
 
+import com.enigma.wmbapi.constant.ConstantTable;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
@@ -17,7 +18,7 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 @Entity
-@Table(name = "t_bill")
+@Table(name = ConstantTable.TRANSACTION)
 public class Transaction {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)

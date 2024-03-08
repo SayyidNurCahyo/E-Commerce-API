@@ -1,6 +1,7 @@
 package com.enigma.wmbapi.controller;
 
 import com.enigma.wmbapi.constant.APIUrl;
+import com.enigma.wmbapi.constant.ResponseMessage;
 import com.enigma.wmbapi.constant.TransTypeId;
 import com.enigma.wmbapi.dto.response.CommonResponse;
 import com.enigma.wmbapi.dto.response.PagingResponse;
@@ -21,18 +22,6 @@ import java.util.List;
 public class TransTypeController {
     private final TransTypeService transTypeService;
 
-    @GetMapping(path = "/{id}")
-    public ResponseEntity<CommonResponse<TransTypeResponse>> getTransTypeById(@PathVariable TransTypeId id) {
-        TransType transType = transTypeService.getTransTypeById(id);
-        TransTypeResponse transTypeResponse = TransTypeResponse.builder().transTypeId(transType.getId())
-                .transTypeDescription(transType.getDescription()).build();
-        CommonResponse<TransTypeResponse> response = CommonResponse.<TransTypeResponse>builder()
-                .statusCode(HttpStatus.OK.value())
-                .message("Data TransType Exists")
-                .data(transTypeResponse).build();
-        return ResponseEntity.ok(response);
-    }
-
     @GetMapping
     public ResponseEntity<CommonResponse<List<TransTypeResponse>>> getAllTransType() {
         List<TransType> transTypes = transTypeService.getAllTransType();
@@ -40,7 +29,7 @@ public class TransTypeController {
                 .transTypeDescription(transType.getDescription()).build()).toList();
         CommonResponse<List<TransTypeResponse>> response = CommonResponse.<List<TransTypeResponse>>builder()
                 .statusCode(HttpStatus.OK.value())
-                .message("Data TransType Exists")
+                .message(ResponseMessage.SUCCESS_GET_DATA)
                 .data(transTypeResponses).build();
         return ResponseEntity.ok(response);
     }

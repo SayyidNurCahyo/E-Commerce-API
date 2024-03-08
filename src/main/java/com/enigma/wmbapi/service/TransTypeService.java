@@ -12,5 +12,4 @@ import java.util.List;
 public interface TransTypeService {
     TransType getTransTypeById(TransTypeId id);
     List<TransType> getAllTransType();
-    TransType getOrSave(GetTransTypeRequest transType);
 }

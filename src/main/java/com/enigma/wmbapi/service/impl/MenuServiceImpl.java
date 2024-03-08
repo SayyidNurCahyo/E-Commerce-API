@@ -31,13 +31,13 @@ public class MenuServiceImpl implements MenuService {
         return menuRepository.saveAndFlush(menu);
     }
 
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional(readOnly = true)
     @Override
     public Menu getMenuById(String id) {
         return menuRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"Menu Not Found"));
     }
 
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional(readOnly = true)
     @Override
     public Page<Menu> getAllMenu(SearchMenuRequest request) {
         if (request.getPage()<1) request.setPage(1);

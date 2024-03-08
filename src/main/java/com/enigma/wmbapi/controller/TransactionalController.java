@@ -6,6 +6,7 @@ import com.enigma.wmbapi.dto.request.NewTransactionRequest;
 import com.enigma.wmbapi.dto.request.SearchTransactionRequest;
 import com.enigma.wmbapi.dto.request.UpdateStatusRequest;
 import com.enigma.wmbapi.dto.response.*;
+import com.enigma.wmbapi.security.AuthenticatedUser;
 import com.enigma.wmbapi.service.TransactionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -23,13 +24,14 @@ import java.util.Map;
 @RequestMapping(path = APIUrl.TRANSACTION_API)
 public class TransactionalController {
     private final TransactionService transactionService;
+    private final AuthenticatedUser authenticatedUser;
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<CommonResponse<TransactionResponse>> addTransaction(@RequestBody NewTransactionRequest request){
         TransactionResponse transaction = transactionService.addTransaction(request);
         CommonResponse<TransactionResponse> response = CommonResponse.<TransactionResponse>builder()
                 .statusCode(HttpStatus.CREATED.value())
-                .message("Data Transaction Added")
+                .message(ResponseMessage.SUCCESS_SAVE_DATA)
                 .data(transaction).build();
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }

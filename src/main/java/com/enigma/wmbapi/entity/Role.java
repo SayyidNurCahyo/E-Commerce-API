@@ -1,5 +1,6 @@
 package com.enigma.wmbapi.entity;
 
+import com.enigma.wmbapi.constant.ConstantTable;
 import com.enigma.wmbapi.constant.UserRole;
 import jakarta.persistence.*;
 import jakarta.persistence.Table;
@@ -11,7 +12,7 @@ import lombok.*;
 @NoArgsConstructor
 @Entity
 @Builder
-@Table(name = "m_role")
+@Table(name = ConstantTable.ROLE)
 public class Role {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)

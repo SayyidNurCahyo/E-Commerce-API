@@ -1,5 +1,6 @@
 package com.enigma.wmbapi.entity;
 
+import com.enigma.wmbapi.constant.ConstantTable;
 import jakarta.persistence.*;
 import jakarta.persistence.Table;
 import lombok.*;
@@ -17,7 +18,7 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 @Entity
-@Table(name = "m_user_account")
+@Table(name = ConstantTable.USER_ACCOUNT)
 public class UserAccount implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)

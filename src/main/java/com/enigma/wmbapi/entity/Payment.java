@@ -1,5 +1,6 @@
 package com.enigma.wmbapi.entity;
 
+import com.enigma.wmbapi.constant.ConstantTable;
 import jakarta.persistence.*;
 import jakarta.persistence.Table;
 import lombok.*;
@@ -10,7 +11,7 @@ import lombok.*;
 @NoArgsConstructor
 @Builder
 @Entity
-@Table(name = "t_payment")
+@Table(name = ConstantTable.PAYMENT)
 public class Payment {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)

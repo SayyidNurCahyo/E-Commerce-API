@@ -1,11 +1,13 @@
 package com.enigma.wmbapi.controller;
 
 import com.enigma.wmbapi.constant.APIUrl;
+import com.enigma.wmbapi.constant.ResponseMessage;
 import com.enigma.wmbapi.dto.request.SearchCustomerRequest;
 import com.enigma.wmbapi.dto.request.UpdateCustomerRequest;
 import com.enigma.wmbapi.dto.response.CustomerResponse;
 import com.enigma.wmbapi.dto.response.PagingResponse;
 import com.enigma.wmbapi.entity.Customer;
+import com.enigma.wmbapi.security.AuthenticatedUser;
 import com.enigma.wmbapi.service.CustomerService;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.RequiredArgsConstructor;
@@ -13,6 +15,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.web.bind.annotation.*;
 import com.enigma.wmbapi.dto.response.CommonResponse;
@@ -25,7 +28,9 @@ import java.util.List;
 @RequestMapping(path = APIUrl.CUSTOMER_API)
 public class CustomerController {
     private final CustomerService customerService;
+    private final AuthenticatedUser authenticatedUser;
 
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN') or @authenticatedUser.hasId(#id)")
     @GetMapping(path = "/{id}")
     public ResponseEntity<CommonResponse<CustomerResponse>> getCustomerById(@PathVariable String id) {
         Customer customer = customerService.getCustomerById(id);
@@ -46,11 +51,12 @@ public class CustomerController {
         }
         CommonResponse<CustomerResponse> response = CommonResponse.<CustomerResponse>builder()
                 .statusCode(HttpStatus.OK.value())
-                .message("Data Customer Exists")
+                .message(ResponseMessage.SUCCESS_GET_DATA)
                 .data(customerResponse).build();
         return ResponseEntity.ok(response);
     }
 
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN')")
     @GetMapping
     public ResponseEntity<CommonResponse<List<CustomerResponse>>> getAllCustomer(
             @RequestParam(name = "page", defaultValue = "1") Integer page,
@@ -84,12 +90,13 @@ public class CustomerController {
                 .hasPrevious(customers.hasPrevious()).build();
         CommonResponse<List<CustomerResponse>> response = CommonResponse.<List<CustomerResponse>>builder()
                 .statusCode(HttpStatus.OK.value())
-                .message("Data Customer Exists")
+                .message(ResponseMessage.SUCCESS_GET_DATA)
                 .data(customerResponses.getContent())
                 .paging(pagingResponse).build();
         return ResponseEntity.ok(response);
     }
 
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN') or @authenticatedUser.hasId(#request.id)")
     @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<CommonResponse<CustomerResponse>> updateCustomer(@RequestBody UpdateCustomerRequest request) {
         Customer customer = customerService.updateCustomer(request);
@@ -109,15 +116,17 @@ public class CustomerController {
         }
         CommonResponse<CustomerResponse> response = CommonResponse.<CustomerResponse>builder()
                 .statusCode(HttpStatus.ACCEPTED.value())
-                .message("Data Customer Updated")
+                .message(ResponseMessage.SUCCESS_UPDATE_DATA)
                 .data(customerResponse).build();
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(response);
     }
 
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN') or @authenticatedUser.hasId(#id)")
     @DeleteMapping("/{id}")
     public ResponseEntity<CommonResponse<CustomerResponse>> deleteById(@PathVariable String id) {
         Customer customer = customerService.deleteById(id);
         CustomerResponse customerResponse;
+//        semua customer harus punya akun
         if(customer.getUserAccount()==null){
             customerResponse = CustomerResponse.builder()
                     .customerId(customer.getId()).customerName(customer.getName()).customerMobilePhone(customer.getPhone()).build();
@@ -133,7 +142,7 @@ public class CustomerController {
         }
         CommonResponse<CustomerResponse> response = CommonResponse.<CustomerResponse>builder()
                 .statusCode(HttpStatus.OK.value())
-                .message("Data Customer Deleted")
+                .message(ResponseMessage.SUCCESS_DELETE_DATA)
                 .data(customerResponse).build();
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
