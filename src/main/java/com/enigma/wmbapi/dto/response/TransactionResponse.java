@@ -21,4 +21,5 @@ public class TransactionResponse {
     private String table;
     private String transactionType;
     private List<TransactionDetailResponse> transactionDetails;
+    private PaymentResponse paymentResponse;
 }

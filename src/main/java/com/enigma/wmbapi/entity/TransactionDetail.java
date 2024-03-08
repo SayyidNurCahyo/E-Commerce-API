@@ -27,8 +27,8 @@ public class TransactionDetail {
     private Menu menu;
 
     @Column(name = "qty")
-    private Float qty;
+    private Integer qty;
 
     @Column(name = "price")
-    private Float price;
+    private Long price;
 }

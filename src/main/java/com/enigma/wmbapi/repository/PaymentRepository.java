@@ -1,2 +1,12 @@
-package com.enigma.wmbapi.repository;public interface PaymentRepository {
+package com.enigma.wmbapi.repository;
+
+import com.enigma.wmbapi.entity.Payment;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+import java.util.List;
+
+@Repository
+public interface PaymentRepository extends JpaRepository<Payment, String> {
+    List<Payment> findAllByTransactionStatusIn(List<String> transactionStatus);
 }

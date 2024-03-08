@@ -10,7 +10,7 @@ import lombok.*;
 @NoArgsConstructor
 @Builder
 @Entity
-@Table(name = "t_paymet")
+@Table(name = "t_payment")
 public class Payment {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)

@@ -9,5 +9,5 @@ import lombok.*;
 @Builder
 public class NewDetailRequest {
     private String menuId;
-    private Float menuQuantity;
+    private Integer menuQuantity;
 }

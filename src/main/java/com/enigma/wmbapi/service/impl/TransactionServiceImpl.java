@@ -5,6 +5,7 @@ import com.enigma.wmbapi.constant.TransTypeId;
 import com.enigma.wmbapi.dto.request.NewTransactionRequest;
 import com.enigma.wmbapi.dto.request.SearchTransactionRequest;
 import com.enigma.wmbapi.dto.request.UpdateStatusRequest;
+import com.enigma.wmbapi.dto.response.PaymentResponse;
 import com.enigma.wmbapi.dto.response.TableResponse;
 import com.enigma.wmbapi.dto.response.TransactionDetailResponse;
 import com.enigma.wmbapi.dto.response.TransactionResponse;
@@ -37,6 +38,7 @@ public class TransactionServiceImpl implements TransactionService {
     private final TableService tableService;
     private final TransTypeService transTypeService;
     private final MenuService menuService;
+    private final PaymentService paymentService;
 
     @Transactional(rollbackFor = Exception.class)
     @Override
@@ -51,10 +53,16 @@ public class TransactionServiceImpl implements TransactionService {
             TransactionDetail.builder().transaction(transaction)
                     .menu(menuService.getMenuById(detail.getMenuId()))
                     .qty(detail.getMenuQuantity())
-                    .price(menuService.getMenuById(detail.getMenuId()).getPrice().floatValue())
+                    .price(menuService.getMenuById(detail.getMenuId()).getPrice())
                     .build()
         )).toList();
         transaction.setTransactionDetails(transactionDetail);
+        Payment payment = paymentService.createPayment(transaction);
+        transaction.setPayment(payment);
+        PaymentResponse paymentResponse = PaymentResponse.builder().id(payment.getId())
+                .token(payment.getToken())
+                .redirectUrl(payment.getRedirectURL())
+                .transactionStatus(payment.getTransactionStatus()).build();
         Transaction trSaved = transactionRepository.save(transaction);
         return TransactionResponse.builder().transactionId(trSaved.getId())
                 .transactionDate(trSaved.getTransDate()).customerName(trSaved.getCustomer().getName())
@@ -64,7 +72,7 @@ public class TransactionServiceImpl implements TransactionService {
                 .transactionDetails(trSaved.getTransactionDetails().stream().map(detail -> (TransactionDetailResponse.builder()
                         .detailId(detail.getId()).menu(detail.getMenu().getName())
                         .menuQuantity(detail.getQty()).menuPrice(detail.getPrice()).build())).toList())
-                .build();
+                .paymentResponse(paymentResponse).build();
     }
 
     @Transactional(readOnly = true)

@@ -8,7 +8,6 @@ public class ResponseMessage {
     public static final String ERROR_NOT_FOUND = "Data Not Found";
     public static final String ERROR_INTERNAL_SERVER = "Internal Server Error";
     public static final String ERROR_FORBIDDEN = "Can't Access This Resource";
-    public static final String ERROR_OUT_OF_STOCK = "Product Currently Out of Stock";
     public static final String ERROR_CREATING_JWT = "Error While Creating JWT Token";
     public static final String SUCCESS_LOGIN = "Login Successfully";
     public static final String ERROR_INVALID_CONTENT_TYPE = "Invalid Resource Type";
