@@ -14,15 +14,22 @@ import com.enigma.wmbapi.service.CustomerService;
 import com.enigma.wmbapi.service.JwtService;
 import com.enigma.wmbapi.service.RoleService;
 import com.enigma.wmbapi.util.ValidationUtil;
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -33,10 +40,33 @@ public class AuthServiceImpl implements AuthService {
     private final CustomerService customerService;
     private final JwtService jwtService;
     private final ValidationUtil validationUtil;
+    private final AuthenticationManager authenticationManager;
+
+    @Value("${wmbapi.username.superadmin}")
+    private String superAdminUsername;
+    @Value("${wmbapi.password.superadmin}")
+    private String superAdminPassword;
+
+    @Transactional(rollbackFor = Exception.class)
+    @PostConstruct
+    public void initSuperAdmin() {
+        Optional<UserAccount> currentUser = userAccountRepository.findByUsername(superAdminUsername);
+        if (currentUser.isPresent()) return;
+        Role superAdmin = roleService.getOrSave(UserRole.ROLE_SUPER_ADMIN);
+        Role admin = roleService.getOrSave(UserRole.ROLE_ADMIN);
+        Role customer = roleService.getOrSave(UserRole.ROLE_CUSTOMER);
+        UserAccount account = UserAccount.builder()
+                .username(superAdminUsername)
+                .password(passwordEncoder.encode(superAdminPassword))
+                .roles(List.of(superAdmin, admin, customer))
+                .isEnabled(true)
+                .build();
+        userAccountRepository.save(account);
+    }
 
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public RegisterResponse register(RegisterRequest request) throws DataIntegrityViolationException {
+    public RegisterResponse registerCustomer(RegisterRequest request) throws DataIntegrityViolationException {
         validationUtil.validate(request);
         Role role=roleService.getOrSave(UserRole.ROLE_CUSTOMER);
         String hashPassword = passwordEncoder.encode(request.getPassword());
@@ -75,16 +105,21 @@ public class AuthServiceImpl implements AuthService {
                 .roles(roleAuth).build();
     }
 
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional(readOnly = true)
     @Override
     public LoginResponse login(AuthRequest request) {
-        UserAccount account = userAccountRepository.findUserAccount(request.getUsername()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"User Account Not Found, Register First"));
-        if(!passwordEncoder.matches(request.getPassword(), account.getPassword())) throw new ResponseStatusException(HttpStatus.NOT_FOUND,"User Account Not Found, Register First");
-        String token = jwtService.generateToken();
+        Authentication authentication = new UsernamePasswordAuthenticationToken(
+                request.getUsername(),
+                request.getPassword()
+        );
+        Authentication authenticate = authenticationManager.authenticate(authentication);
+        SecurityContextHolder.getContext().setAuthentication(authenticate);
+        UserAccount userAccount = (UserAccount) authenticate.getPrincipal();
+        String token = jwtService.generateToken(userAccount);
         return LoginResponse.builder()
-                .username(request.getUsername())
+                .username(userAccount.getUsername())
+                .roles(userAccount.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList())
                 .token(token)
-                .roles(account.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList())
                 .build();
     }
 }
