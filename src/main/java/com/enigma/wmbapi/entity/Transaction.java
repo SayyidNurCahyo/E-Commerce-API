@@ -43,4 +43,8 @@ public class Transaction {
     @OneToMany(mappedBy = "transaction", cascade = CascadeType.PERSIST)
     @JsonManagedReference
     private List<TransactionDetail> transactionDetails;
+
+    @OneToOne
+    @JoinColumn(name = "payment_id", unique = true)
+    private Payment payment;
 }

@@ -11,5 +11,6 @@ public interface TransactionService {
 
     TransactionResponse addTransaction(NewTransactionRequest request);
     Page<TransactionResponse> getAllTransaction(SearchTransactionRequest request);
+    Page<TransactionResponse> getAllByCustomerId(String customerId, SearchTransactionRequest request);
     void updateStatus(UpdateStatusRequest request);
 }

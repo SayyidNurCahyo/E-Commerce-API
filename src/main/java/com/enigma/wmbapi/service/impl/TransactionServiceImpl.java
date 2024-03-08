@@ -1,5 +1,6 @@
 package com.enigma.wmbapi.service.impl;
 
+import com.enigma.wmbapi.constant.ResponseMessage;
 import com.enigma.wmbapi.constant.TransTypeId;
 import com.enigma.wmbapi.dto.request.NewTransactionRequest;
 import com.enigma.wmbapi.dto.request.SearchTransactionRequest;
@@ -7,6 +8,7 @@ import com.enigma.wmbapi.dto.request.UpdateStatusRequest;
 import com.enigma.wmbapi.dto.response.TableResponse;
 import com.enigma.wmbapi.dto.response.TransactionDetailResponse;
 import com.enigma.wmbapi.dto.response.TransactionResponse;
+import com.enigma.wmbapi.entity.Payment;
 import com.enigma.wmbapi.entity.Transaction;
 import com.enigma.wmbapi.entity.TransactionDetail;
 import com.enigma.wmbapi.repository.*;
@@ -34,7 +36,6 @@ public class TransactionServiceImpl implements TransactionService {
     private final CustomerService customerService;
     private final TableService tableService;
     private final TransTypeService transTypeService;
-    private final TransactionDetailService detailService;
     private final MenuService menuService;
 
     @Transactional(rollbackFor = Exception.class)
@@ -93,9 +94,38 @@ public class TransactionServiceImpl implements TransactionService {
         });
     }
 
+    @Transactional(readOnly = true)
+    @Override
+    public Page<TransactionResponse> getAllByCustomerId(String customerId, SearchTransactionRequest request) {
+        Pageable pageable = PageRequest.of(request.getPage(), request.getSize());
+        Page<Transaction> transactions = transactionRepository.findAllByCustomerId(customerId, pageable).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, ResponseMessage.ERROR_NOT_FOUND));
+
+        return transactions.map(trx -> {
+            List<TransactionDetailResponse> trxDetailResponses = trx.getTransactionDetails().stream().map(detail ->
+                    TransactionDetailResponse.builder()
+                            .detailId(detail.getId())
+                            .menu(detail.getMenu().getName())
+                            .menuQuantity(detail.getQty())
+                            .menuPrice(detail.getPrice())
+                            .build()).toList();
+
+            return TransactionResponse.builder()
+                    .transactionId(trx.getId())
+                    .transactionDate(trx.getTransDate())
+                    .customerName(trx.getCustomer().getName())
+                    .customerPhone(trx.getCustomer().getPhone())
+                    .table(trx.getTable().getName())
+                    .transactionType(trx.getTransType().getDescription())
+                    .transactionDetails(trxDetailResponses)
+                    .build();
+        });
+    }
+
     @Transactional(rollbackFor = Exception.class)
     @Override
     public void updateStatus(UpdateStatusRequest request) {
-
+        Transaction transaction = transactionRepository.findById(request.getOrderId()).orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND, ResponseMessage.ERROR_NOT_FOUND));
+        Payment payment = transaction.getPayment();
+        payment.setTransactionStatus(request.getTransactionStatus());
     }
 }
