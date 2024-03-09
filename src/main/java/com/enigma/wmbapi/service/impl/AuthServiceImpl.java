@@ -5,14 +5,12 @@ import com.enigma.wmbapi.dto.request.AuthRequest;
 import com.enigma.wmbapi.dto.request.RegisterRequest;
 import com.enigma.wmbapi.dto.response.LoginResponse;
 import com.enigma.wmbapi.dto.response.RegisterResponse;
+import com.enigma.wmbapi.entity.Admin;
 import com.enigma.wmbapi.entity.Customer;
 import com.enigma.wmbapi.entity.Role;
 import com.enigma.wmbapi.entity.UserAccount;
 import com.enigma.wmbapi.repository.UserAccountRepository;
-import com.enigma.wmbapi.service.AuthService;
-import com.enigma.wmbapi.service.CustomerService;
-import com.enigma.wmbapi.service.JwtService;
-import com.enigma.wmbapi.service.RoleService;
+import com.enigma.wmbapi.service.*;
 import com.enigma.wmbapi.util.ValidationUtil;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
@@ -41,6 +39,7 @@ public class AuthServiceImpl implements AuthService {
     private final JwtService jwtService;
     private final ValidationUtil validationUtil;
     private final AuthenticationManager authenticationManager;
+    private final AdminService adminService;
 
     @Value("${wmbapi.username.superadmin}")
     private String superAdminUsername;
@@ -89,7 +88,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public RegisterResponse registerAdmin(AuthRequest request) {
+    public RegisterResponse registerAdmin(RegisterRequest request) throws DataIntegrityViolationException {
         validationUtil.validate(request);
         Role role=roleService.getOrSave(UserRole.ROLE_ADMIN);
         String hashPassword = passwordEncoder.encode(request.getPassword());
@@ -99,6 +98,9 @@ public class AuthServiceImpl implements AuthService {
                 .roles(List.of(role))
                 .isEnabled(true).build();
         userAccountRepository.saveAndFlush(account);
+        Admin admin = Admin.builder().name(request.getName())
+                .phone(request.getPhone()).userAccount(account).build();
+        adminService.addAdmin(admin);
         List<String> roleAuth = account.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList();
         return RegisterResponse.builder()
                 .username(account.getUsername())

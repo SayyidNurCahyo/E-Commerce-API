@@ -24,7 +24,6 @@ import org.springframework.web.server.ResponseStatusException;
 public class CustomerServiceImpl implements CustomerService {
     private final CustomerRepository customerRepository;
     private final ValidationUtil validationUtil;
-    private final UserAccountRepository userAccountRepository;
 
     @Transactional(rollbackFor = Exception.class)
     @Override

@@ -7,6 +7,6 @@ import com.enigma.wmbapi.dto.response.RegisterResponse;
 
 public interface AuthService {
     RegisterResponse registerCustomer(RegisterRequest request);
-    RegisterResponse registerAdmin(AuthRequest request);
+    RegisterResponse registerAdmin(RegisterRequest request);
     LoginResponse login(AuthRequest request);
 }

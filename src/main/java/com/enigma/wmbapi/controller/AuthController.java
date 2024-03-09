@@ -35,7 +35,7 @@ public class AuthController {
 
     @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN')")
     @PostMapping(path = "/registerAdmin", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<CommonResponse<?>> registerAdmin(@RequestBody AuthRequest request){
+    public ResponseEntity<CommonResponse<?>> registerAdmin(@RequestBody RegisterRequest request){
         CommonResponse<RegisterResponse> response = CommonResponse.<RegisterResponse>builder()
                 .statusCode(HttpStatus.CREATED.value()).message(ResponseMessage.SUCCESS_SAVE_DATA)
                 .data(authService.registerAdmin(request)).build();
