@@ -20,7 +20,7 @@ public class TransType {
     @Enumerated(EnumType.STRING)
     private TransTypeId id;
 
-    @Column(name = "description")
+    @Column(name = "description", nullable = false)
     private String description;
 }
 

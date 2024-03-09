@@ -34,7 +34,7 @@ public class Transaction {
     private Customer customer;
 
     @ManyToOne
-    @JoinColumn(name = "table_id", referencedColumnName = "id")
+    @JoinColumn(name = "table_id", referencedColumnName = "id", nullable = false)
     private com.enigma.wmbapi.entity.Table table;
 
     @ManyToOne

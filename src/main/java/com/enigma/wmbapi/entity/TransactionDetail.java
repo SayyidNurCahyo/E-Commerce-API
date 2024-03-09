@@ -27,9 +27,9 @@ public class TransactionDetail {
     @JoinColumn(name = "menu_id", referencedColumnName = "id", nullable = false)
     private Menu menu;
 
-    @Column(name = "qty")
+    @Column(name = "qty", nullable = false, columnDefinition = "INT CHECK (qty>=0)")
     private Integer qty;
 
-    @Column(name = "price")
+    @Column(name = "price", nullable = false, columnDefinition = "BIGINT CHECK (price>=0)")
     private Long price;
 }

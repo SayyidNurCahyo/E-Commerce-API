@@ -16,11 +16,11 @@ public class Payment {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
-    @Column(name = "token")
+    @Column(name = "token", nullable = false)
     private String token;
-    @Column(name = "redirect_url")
+    @Column(name = "redirect_url", nullable = false)
     private String redirectURL;
-    @Column(name = "transaction_status")
+    @Column(name = "transaction_status", nullable = false)
     private String transactionStatus;
     @OneToOne(mappedBy = "payment")
     private Transaction transaction;
