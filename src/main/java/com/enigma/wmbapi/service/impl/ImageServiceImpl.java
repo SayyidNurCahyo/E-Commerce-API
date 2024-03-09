@@ -13,6 +13,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -43,6 +44,7 @@ public class ImageServiceImpl implements ImageService {
         }
     }
 
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public Image addImage(Menu menu, MultipartFile image) {
         try {
@@ -59,11 +61,13 @@ public class ImageServiceImpl implements ImageService {
         }
     }
 
+    @Transactional(readOnly = true)
     @Override
     public Image getByName(String name) {
         return imageRepository.findByName(name).orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND, ResponseMessage.ERROR_NOT_FOUND));
     }
 
+    @Transactional(readOnly = true)
     @Override
     public Resource getById(String id) {
         try {
@@ -76,6 +80,7 @@ public class ImageServiceImpl implements ImageService {
         }
     }
 
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public void delete(Image image) {
         try {

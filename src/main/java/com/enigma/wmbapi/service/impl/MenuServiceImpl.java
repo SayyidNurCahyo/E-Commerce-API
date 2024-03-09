@@ -46,7 +46,7 @@ public class MenuServiceImpl implements MenuService {
             images.add(imageAdded);
         }
         menu.setImages(images);
-        menuRepository.saveAndFlush(menu);
+//        menuRepository.saveAndFlush(menu);
         return convertToMenuResponse(menu);
     }
 
@@ -79,14 +79,16 @@ public class MenuServiceImpl implements MenuService {
         menu.setName(request.getName());
         menu.setPrice(request.getPrice());
         if (request.getImages()!=null){
+            List<Image> imageOlds = menu.getImages();
+            for (Image imageOld:imageOlds){
+                imageService.delete(imageOld);
+            }
             List<Image> imageList = new ArrayList<>();
             for (MultipartFile image: request.getImages()){
                 Image imageNew = imageService.addImage(menu,image);
                 imageList.add(imageNew);
             }
-            List<Image> imageOld = menu.getImages();
             menu.setImages(imageList);
-            imageOld.forEach(imageService::delete);
         }
         menuRepository.saveAndFlush(menu);
         return convertToMenuResponse(menu);
@@ -96,8 +98,10 @@ public class MenuServiceImpl implements MenuService {
     @Override
     public MenuResponse deleteById(String id) {
         Menu menu = menuRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"Menu Not Found"));
+        for (Image image: menu.getImages()){
+            imageService.delete(image);
+        }
         menuRepository.delete(menu);
-        menu.getImages().forEach(imageService::delete);
         return convertToMenuResponse(menu);
     }
 

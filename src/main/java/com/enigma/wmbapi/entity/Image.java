@@ -17,9 +17,8 @@ public class Image {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "menu_id", referencedColumnName = "id", nullable = false)
-    @JsonBackReference
     private Menu menu;
     @Column(name = "name", nullable = false)
     private String name;

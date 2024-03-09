@@ -4,6 +4,7 @@ import com.enigma.wmbapi.dto.request.SearchCustomerRequest;
 import com.enigma.wmbapi.dto.request.UpdateCustomerRequest;
 import com.enigma.wmbapi.dto.response.CustomerResponse;
 import com.enigma.wmbapi.entity.Customer;
+import com.enigma.wmbapi.entity.UserAccount;
 import com.enigma.wmbapi.repository.CustomerRepository;
 import com.enigma.wmbapi.repository.UserAccountRepository;
 import com.enigma.wmbapi.service.CustomerService;
@@ -24,6 +25,7 @@ import org.springframework.web.server.ResponseStatusException;
 public class CustomerServiceImpl implements CustomerService {
     private final CustomerRepository customerRepository;
     private final ValidationUtil validationUtil;
+    private final UserAccountRepository userAccountRepository;
 
     @Transactional(rollbackFor = Exception.class)
     @Override
@@ -57,11 +59,13 @@ public class CustomerServiceImpl implements CustomerService {
     public CustomerResponse updateCustomer(UpdateCustomerRequest request) {
         validationUtil.validate(request);
         Customer customer = customerRepository.findById(request.getId()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"Customer Not Found"));
-        customer.getUserAccount().setUsername(request.getUsername());
-        Customer customerNew = Customer.builder().id(customer.getId()).name(customer.getName())
-                .phone(customer.getPhone()).userAccount(customer.getUserAccount()).build();
-        customerRepository.saveAndFlush(customerNew);
-        return convertToCustomerResponse(customerNew);
+        customer.setName(request.getName());
+        customer.setPhone(request.getPhone());
+        UserAccount account = customer.getUserAccount();
+        account.setUsername(request.getUsername());
+        customer.setUserAccount(account);
+        customerRepository.saveAndFlush(customer);
+        return convertToCustomerResponse(customer);
     }
 
     @Transactional(rollbackFor = Exception.class)
@@ -69,6 +73,7 @@ public class CustomerServiceImpl implements CustomerService {
     public CustomerResponse deleteById(String id) {
         Customer customer = customerRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"Customer Not Found"));
         customerRepository.delete(customer);
+        userAccountRepository.delete(customer.getUserAccount());
         return convertToCustomerResponse(customer);
     }
 

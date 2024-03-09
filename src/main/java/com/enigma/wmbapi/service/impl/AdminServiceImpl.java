@@ -8,6 +8,7 @@ import com.enigma.wmbapi.dto.response.AdminResponse;
 import com.enigma.wmbapi.dto.response.AdminResponse;
 import com.enigma.wmbapi.entity.Admin;
 import com.enigma.wmbapi.entity.Admin;
+import com.enigma.wmbapi.entity.UserAccount;
 import com.enigma.wmbapi.repository.AdminRepository;
 import com.enigma.wmbapi.repository.UserAccountRepository;
 import com.enigma.wmbapi.service.AdminService;
@@ -28,6 +29,7 @@ import org.springframework.web.server.ResponseStatusException;
 public class AdminServiceImpl implements AdminService {
     private final AdminRepository adminRepository;
     private final ValidationUtil validationUtil;
+    private final UserAccountRepository userAccountRepository;
 
     @Transactional(rollbackFor = Exception.class)
     @Override
@@ -61,11 +63,13 @@ public class AdminServiceImpl implements AdminService {
     public AdminResponse updateAdmin(UpdateAdminRequest request) {
         validationUtil.validate(request);
         Admin admin = adminRepository.findById(request.getId()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"Admin Not Found"));
-        admin.getUserAccount().setUsername(request.getUsername());
-        Admin adminNew = Admin.builder().id(admin.getId()).name(admin.getName())
-                .phone(admin.getPhone()).userAccount(admin.getUserAccount()).build();
-        adminRepository.saveAndFlush(adminNew);
-        return convertToAdminResponse(adminNew);
+        admin.setName(request.getName());
+        admin.setPhone(request.getPhone());
+        UserAccount account = admin.getUserAccount();
+        account.setUsername(request.getUsername());
+        admin.setUserAccount(account);
+        adminRepository.saveAndFlush(admin);
+        return convertToAdminResponse(admin);
     }
 
     @Transactional(rollbackFor = Exception.class)
@@ -73,6 +77,7 @@ public class AdminServiceImpl implements AdminService {
     public AdminResponse deleteById(String id) {
         Admin admin = adminRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"Admin Not Found"));
         adminRepository.delete(admin);
+        userAccountRepository.delete(admin.getUserAccount());
         return convertToAdminResponse(admin);
     }
 
