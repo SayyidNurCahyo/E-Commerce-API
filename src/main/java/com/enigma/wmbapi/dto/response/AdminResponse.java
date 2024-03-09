@@ -12,7 +12,7 @@ import java.util.List;
 public class AdminResponse {
     private String adminId;
     private String adminName;
-    private String adminMobilePhone;
+    private String adminPhone;
     private String adminUsername;
     private String adminPassword;
     private List<String> adminRole;

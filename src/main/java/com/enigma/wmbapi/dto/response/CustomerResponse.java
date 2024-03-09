@@ -13,7 +13,7 @@ import java.util.List;
 public class CustomerResponse {
     private String customerId;
     private String customerName;
-    private String customerMobilePhone;
+    private String customerPhone;
     private String customerUsername;
     private String customerPassword;
     private List<String> customerRole;

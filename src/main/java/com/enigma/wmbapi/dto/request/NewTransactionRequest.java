@@ -2,6 +2,7 @@ package com.enigma.wmbapi.dto.request;
 
 import com.enigma.wmbapi.constant.TransTypeId;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 import java.util.List;
@@ -16,9 +17,7 @@ public class NewTransactionRequest {
     private String transactionDate;
     @NotBlank(message = "Customer Id is Required")
     private String customerId;
-    @NotBlank(message = "Table Id is Required")
     private String tableId;
-    @NotBlank(message = "Table Id is Required")
-    private String transTypeId;
+    @NotNull(message = "Transaction Detail is Required")
     private List<NewDetailRequest> transactionDetails;
 }

@@ -42,15 +42,20 @@ public class TransactionServiceImpl implements TransactionService {
     public TransactionResponse addTransaction(NewTransactionRequest request) {
         validationUtil.validate(request);
         CustomerResponse customerResponse = customerService.getCustomerById(request.getCustomerId());
-        TableResponse tableResponse = tableService.getTableById(request.getTableId());
         Transaction transaction = Transaction.builder()
                 .transDate(DateUtil.parseDate(request.getTransactionDate(), "yyyy-MM-dd"))
                 .customer(Customer.builder().id(customerResponse.getCustomerId())
                         .name(customerResponse.getCustomerName())
-                        .phone(customerResponse.getCustomerMobilePhone())
-                        .userAccount((UserAccount) userService.loadUserByUsername(customerResponse.getCustomerUsername())).build())
-                .table(Table.builder().id(tableResponse.getTableId()).name(tableResponse.getTableName()).build())
-                .transType(transTypeService.getTransTypeById(Enum.valueOf(TransTypeId.class,request.getTransTypeId()))).build();
+                        .phone(customerResponse.getCustomerPhone())
+                        .userAccount((UserAccount) userService.loadUserByUsername(customerResponse.getCustomerUsername())).build()).build();
+        TableResponse tableResponse=null;
+        if (request.getTableId()!=null) {
+            tableResponse = tableService.getTableById(request.getTableId());
+            transaction.setTable(Table.builder().id(tableResponse.getTableId()).name(tableResponse.getTableName()).build());
+            transaction.setTransType(TransType.builder().id(TransTypeId.EI).description("Eat In").build());
+        } else {
+            transaction.setTransType(TransType.builder().id(TransTypeId.TA).description("Take Away").build());
+        }
         List<TransactionDetail> transactionDetail = request.getTransactionDetails().stream().map(detail -> {
             MenuResponse menuResponse = menuService.getMenuById(detail.getMenuId());
             return TransactionDetail.builder().transaction(transaction)

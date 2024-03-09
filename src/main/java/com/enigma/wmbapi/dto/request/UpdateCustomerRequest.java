@@ -14,8 +14,8 @@ public class UpdateCustomerRequest {
     private String id;
     @NotBlank(message = "Name is Required")
     private String name;
-    @NotBlank(message = "Mobile Phone Number is Required")
-    @Pattern(regexp = "^[\\+]?[(]?[0-9]{3}[)]?[-\\s\\.]?[0-9]{3}[-\\s\\.]?[0-9]{4,6}$", message = "Phone Number Format Incorrect")
+    @NotBlank(message = "Phone Number is Required")
+    @Pattern(regexp = "^(\\+62|0)(8[0-9]{2}[-.\\s]?[0-9]{3,}-?[0-9]{3,}|\\(0[0-9]{2}\\)[-\\s]?[0-9]{3,}-?[0-9]{3,}|\\+62[-\\s]?[0-9]{1,2}[-.\\s]?[0-9]{3,}-?[0-9]{3,})$", message = "Phone Number Isn't In Indonesia Format")
     private String phone;
     @NotBlank(message = "Username is Required")
     private String username;

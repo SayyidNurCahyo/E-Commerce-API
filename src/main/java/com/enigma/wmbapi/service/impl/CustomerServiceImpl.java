@@ -73,20 +73,14 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     private CustomerResponse convertToCustomerResponse(Customer customer){
-        if(customer.getUserAccount()==null){
-            return CustomerResponse.builder()
-                    .customerId(customer.getId()).customerName(customer.getName())
-                    .customerMobilePhone(customer.getPhone()).build();
-        }else {
-            return CustomerResponse.builder()
-                    .customerId(customer.getId())
-                    .customerName(customer.getName())
-                    .customerMobilePhone(customer.getPhone())
-                    .customerUsername(customer.getUserAccount().getUsername())
-                    .customerPassword(customer.getUserAccount().getPassword())
-                    .customerRole(customer.getUserAccount().getAuthorities().stream().map(GrantedAuthority::getAuthority).toList())
-                    .build();
-        }
+        return CustomerResponse.builder()
+                .customerId(customer.getId())
+                .customerName(customer.getName())
+                .customerPhone(customer.getPhone())
+                .customerUsername(customer.getUserAccount().getUsername())
+                .customerPassword(customer.getUserAccount().getPassword())
+                .customerRole(customer.getUserAccount().getAuthorities().stream().map(GrantedAuthority::getAuthority).toList())
+                .build();
     }
 
     private Page<CustomerResponse> convertToPageCustomerResponse(Page<Customer> customers){

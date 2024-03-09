@@ -80,7 +80,7 @@ public class AdminServiceImpl implements AdminService {
         return AdminResponse.builder()
                 .adminId(admin.getId())
                 .adminName(admin.getName())
-                .adminMobilePhone(admin.getPhone())
+                .adminPhone(admin.getPhone())
                 .adminUsername(admin.getUserAccount().getUsername())
                 .adminPassword(admin.getUserAccount().getPassword())
                 .adminRole(admin.getUserAccount().getAuthorities().stream().map(GrantedAuthority::getAuthority).toList())
