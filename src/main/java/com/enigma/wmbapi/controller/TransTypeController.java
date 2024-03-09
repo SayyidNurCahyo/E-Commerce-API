@@ -24,13 +24,11 @@ public class TransTypeController {
 
     @GetMapping
     public ResponseEntity<CommonResponse<List<TransTypeResponse>>> getAllTransType() {
-        List<TransType> transTypes = transTypeService.getAllTransType();
-        List<TransTypeResponse> transTypeResponses = transTypes.stream().map(transType -> TransTypeResponse.builder().transTypeId(transType.getId())
-                .transTypeDescription(transType.getDescription()).build()).toList();
+        List<TransTypeResponse> transTypes = transTypeService.getAllTransType();
         CommonResponse<List<TransTypeResponse>> response = CommonResponse.<List<TransTypeResponse>>builder()
                 .statusCode(HttpStatus.OK.value())
                 .message(ResponseMessage.SUCCESS_GET_DATA)
-                .data(transTypeResponses).build();
+                .data(transTypes).build();
         return ResponseEntity.ok(response);
     }
 }

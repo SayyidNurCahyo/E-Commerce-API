@@ -20,8 +20,8 @@ public class UserServiceImpl implements UserService {
 
     @Transactional(readOnly = true)
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return userAccountRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("username not found"));
+    public UserAccount loadUserByUsername(String username){
+        return userAccountRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("Username Not Found"));
     }
 
     @Transactional(readOnly = true)
@@ -36,6 +36,6 @@ public class UserServiceImpl implements UserService {
     public UserAccount getByContext() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         return userAccountRepository.findByUsername(authentication.getPrincipal().toString())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "user not found"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User Not Found"));
     }
 }

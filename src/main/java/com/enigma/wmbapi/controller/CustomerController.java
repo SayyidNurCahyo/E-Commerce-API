@@ -33,26 +33,11 @@ public class CustomerController {
     @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN') or @authenticatedUser.hasId(#id)")
     @GetMapping(path = "/{id}")
     public ResponseEntity<CommonResponse<CustomerResponse>> getCustomerById(@PathVariable String id) {
-        Customer customer = customerService.getCustomerById(id);
-        CustomerResponse customerResponse;
-        if(customer.getUserAccount()==null){
-            customerResponse = CustomerResponse.builder()
-                    .customerId(customer.getId()).customerName(customer.getName())
-                    .customerMobilePhone(customer.getPhone()).build();
-        }else {
-            customerResponse = CustomerResponse.builder()
-                    .customerId(customer.getId())
-                    .customerName(customer.getName())
-                    .customerMobilePhone(customer.getPhone())
-                    .customerUsername(customer.getUserAccount().getUsername())
-                    .customerPassword(customer.getUserAccount().getPassword())
-                    .customerRole(customer.getUserAccount().getAuthorities().stream().map(GrantedAuthority::getAuthority).toList())
-                    .build();
-        }
+        CustomerResponse customer = customerService.getCustomerById(id);
         CommonResponse<CustomerResponse> response = CommonResponse.<CustomerResponse>builder()
                 .statusCode(HttpStatus.OK.value())
                 .message(ResponseMessage.SUCCESS_GET_DATA)
-                .data(customerResponse).build();
+                .data(customer).build();
         return ResponseEntity.ok(response);
     }
 
@@ -69,18 +54,7 @@ public class CustomerController {
         SearchCustomerRequest request = SearchCustomerRequest.builder()
                 .page(page).size(size).sortBy(sortBy).direction(direction)
                 .name(name).phone(phone).build();
-        Page<Customer> customers = customerService.getAllCustomer(request);
-        Page<CustomerResponse> customerResponses = customers.map(customer -> customer.getUserAccount() == null ?
-                        CustomerResponse.builder()
-                                .customerId(customer.getId()).customerName(customer.getName())
-                                .customerMobilePhone(customer.getPhone()).build() :
-                        CustomerResponse.builder()
-                                .customerId(customer.getId()).customerName(customer.getName())
-                                .customerMobilePhone(customer.getPhone())
-                                .customerUsername(customer.getUserAccount().getUsername())
-                                .customerPassword(customer.getUserAccount().getPassword())
-                                .customerRole(customer.getUserAccount().getAuthorities().stream().map(GrantedAuthority::getAuthority).toList())
-                                .build());
+        Page<CustomerResponse> customers = customerService.getAllCustomer(request);
         PagingResponse pagingResponse = PagingResponse.builder()
                 .totalPages(customers.getTotalPages())
                 .totalElement(customers.getTotalElements())
@@ -91,7 +65,7 @@ public class CustomerController {
         CommonResponse<List<CustomerResponse>> response = CommonResponse.<List<CustomerResponse>>builder()
                 .statusCode(HttpStatus.OK.value())
                 .message(ResponseMessage.SUCCESS_GET_DATA)
-                .data(customerResponses.getContent())
+                .data(customers.getContent())
                 .paging(pagingResponse).build();
         return ResponseEntity.ok(response);
     }
@@ -99,51 +73,22 @@ public class CustomerController {
     @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN') or @authenticatedUser.hasId(#request.id)")
     @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<CommonResponse<CustomerResponse>> updateCustomer(@RequestBody UpdateCustomerRequest request) {
-        Customer customer = customerService.updateCustomer(request);
-        CustomerResponse customerResponse;
-        if(customer.getUserAccount()==null){
-            customerResponse = CustomerResponse.builder()
-                    .customerId(customer.getId()).customerName(customer.getName()).customerMobilePhone(customer.getPhone()).build();
-        }else {
-            customerResponse = CustomerResponse.builder()
-                    .customerId(customer.getId())
-                    .customerName(customer.getName())
-                    .customerMobilePhone(customer.getPhone())
-                    .customerUsername(customer.getUserAccount().getUsername())
-                    .customerPassword(customer.getUserAccount().getPassword())
-                    .customerRole(customer.getUserAccount().getAuthorities().stream().map(GrantedAuthority::getAuthority).toList())
-                    .build();
-        }
+        CustomerResponse customer = customerService.updateCustomer(request);
         CommonResponse<CustomerResponse> response = CommonResponse.<CustomerResponse>builder()
                 .statusCode(HttpStatus.ACCEPTED.value())
                 .message(ResponseMessage.SUCCESS_UPDATE_DATA)
-                .data(customerResponse).build();
+                .data(customer).build();
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(response);
     }
 
     @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN') or @authenticatedUser.hasId(#id)")
     @DeleteMapping("/{id}")
     public ResponseEntity<CommonResponse<CustomerResponse>> deleteById(@PathVariable String id) {
-        Customer customer = customerService.deleteById(id);
-        CustomerResponse customerResponse;
-//        semua customer harus punya akun
-        if(customer.getUserAccount()==null){
-            customerResponse = CustomerResponse.builder()
-                    .customerId(customer.getId()).customerName(customer.getName()).customerMobilePhone(customer.getPhone()).build();
-        }else {
-            customerResponse = CustomerResponse.builder()
-                    .customerId(customer.getId())
-                    .customerName(customer.getName())
-                    .customerMobilePhone(customer.getPhone())
-                    .customerUsername(customer.getUserAccount().getUsername())
-                    .customerPassword(customer.getUserAccount().getPassword())
-                    .customerRole(customer.getUserAccount().getAuthorities().stream().map(GrantedAuthority::getAuthority).toList())
-                    .build();
-        }
+        CustomerResponse customer = customerService.deleteById(id);
         CommonResponse<CustomerResponse> response = CommonResponse.<CustomerResponse>builder()
                 .statusCode(HttpStatus.OK.value())
                 .message(ResponseMessage.SUCCESS_DELETE_DATA)
-                .data(customerResponse).build();
+                .data(customer).build();
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 }

@@ -8,8 +8,8 @@ import org.springframework.data.domain.Page;
 
 public interface CustomerService {
     void addCustomer(Customer customer);
-    Customer getCustomerById(String id);
-    Page<Customer> getAllCustomer(SearchCustomerRequest request);
-    Customer updateCustomer(UpdateCustomerRequest customer);
-    Customer deleteById(String id);
+    CustomerResponse getCustomerById(String id);
+    Page<CustomerResponse> getAllCustomer(SearchCustomerRequest request);
+    CustomerResponse updateCustomer(UpdateCustomerRequest customer);
+    CustomerResponse deleteById(String id);
 }

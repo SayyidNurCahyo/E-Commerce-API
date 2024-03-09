@@ -60,6 +60,11 @@ public class ImageServiceImpl implements ImageService {
     }
 
     @Override
+    public Image getByName(String name) {
+        return imageRepository.findByName(name).orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND, ResponseMessage.ERROR_NOT_FOUND));
+    }
+
+    @Override
     public Resource getById(String id) {
         try {
             Image image = imageRepository.findById(id).orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND, ResponseMessage.ERROR_NOT_FOUND));
@@ -72,9 +77,9 @@ public class ImageServiceImpl implements ImageService {
     }
 
     @Override
-    public void deleteById(String id) {
+    public void delete(Image image) {
         try {
-            Image image = imageRepository.findById(id).orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND, ResponseMessage.ERROR_NOT_FOUND));
+            imageRepository.findById(image.getId()).orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND, ResponseMessage.ERROR_NOT_FOUND));
             Path filePath = Paths.get(image.getPath());
             if (!Files.exists(filePath)) throw new ResponseStatusException(HttpStatus.NOT_FOUND, ResponseMessage.ERROR_NOT_FOUND);
             Files.delete(filePath);

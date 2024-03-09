@@ -1,8 +1,11 @@
 package com.enigma.wmbapi.service.impl;
 
+import com.enigma.wmbapi.constant.APIUrl;
 import com.enigma.wmbapi.dto.request.NewMenuRequest;
 import com.enigma.wmbapi.dto.request.SearchMenuRequest;
 import com.enigma.wmbapi.dto.request.UpdateMenuRequest;
+import com.enigma.wmbapi.dto.response.ImageResponse;
+import com.enigma.wmbapi.dto.response.MenuResponse;
 import com.enigma.wmbapi.entity.Image;
 import com.enigma.wmbapi.entity.Menu;
 import com.enigma.wmbapi.repository.MenuRepository;
@@ -24,8 +27,6 @@ import org.springframework.web.server.ResponseStatusException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static java.awt.SystemColor.menu;
-
 @Service
 @RequiredArgsConstructor
 public class MenuServiceImpl implements MenuService {
@@ -35,7 +36,7 @@ public class MenuServiceImpl implements MenuService {
 
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public Menu addMenu(NewMenuRequest request) {
+    public MenuResponse addMenu(NewMenuRequest request) {
         validationUtil.validate(request);
         if (request.getImages().isEmpty()) throw new ConstraintViolationException("Menu Image is Required", null);
         Menu menu = Menu.builder().name(request.getName()).price(request.getPrice()).build();
@@ -45,31 +46,34 @@ public class MenuServiceImpl implements MenuService {
             images.add(imageAdded);
         }
         menu.setImages(images);
-        return menuRepository.saveAndFlush(menu);
+        menuRepository.saveAndFlush(menu);
+        return convertToMenuResponse(menu);
     }
 
     @Transactional(readOnly = true)
     @Override
-    public Menu getMenuById(String id) {
-        return menuRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"Menu Not Found"));
+    public MenuResponse getMenuById(String id) {
+        Menu menu = menuRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"Menu Not Found"));
+        return convertToMenuResponse(menu);
     }
 
     @Transactional(readOnly = true)
     @Override
-    public Page<Menu> getAllMenu(SearchMenuRequest request) {
+    public Page<MenuResponse> getAllMenu(SearchMenuRequest request) {
         if (request.getPage()<1) request.setPage(1);
         if (request.getSize()<1) request.setSize(1);
         Pageable page = PageRequest.of(request.getPage() -1, request.getSize(), Sort.by(Sort.Direction.fromString(request.getDirection()), request.getSortBy()));
         if(request.getName()!=null || request.getPrice()!=null){
-            return menuRepository.findMenu(request.getName(), request.getPrice(), page);
+            Page<Menu> menus = menuRepository.findMenu(request.getName(), request.getPrice(), page);
+            return convertToPageMenuResponse(menus);
         }else {
-            return menuRepository.findAll(page);
+            return convertToPageMenuResponse(menuRepository.findAll(page));
         }
     }
 
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public Menu updateMenu(UpdateMenuRequest request) {
+    public MenuResponse updateMenu(UpdateMenuRequest request) {
         validationUtil.validate(request);
         Menu menu = menuRepository.findById(request.getId()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"Menu Not Found"));
         menu.setName(request.getName());
@@ -80,18 +84,31 @@ public class MenuServiceImpl implements MenuService {
                 Image imageNew = imageService.addImage(menu,image);
                 imageList.add(imageNew);
             }
-            List<String> imageIdOld = menu.getImages().stream().map(Image::getId).toList();
+            List<Image> imageOld = menu.getImages();
             menu.setImages(imageList);
-            imageIdOld.forEach(imageService::deleteById);
+            imageOld.forEach(imageService::delete);
         }
-        return menuRepository.saveAndFlush(menu);
+        menuRepository.saveAndFlush(menu);
+        return convertToMenuResponse(menu);
     }
 
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public Menu deleteById(String id) {
+    public MenuResponse deleteById(String id) {
         Menu menu = menuRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"Menu Not Found"));
         menuRepository.delete(menu);
-        return menu;
+        menu.getImages().forEach(imageService::delete);
+        return convertToMenuResponse(menu);
+    }
+
+    private MenuResponse convertToMenuResponse(Menu menu){
+        return MenuResponse.builder().menuId(menu.getId()).menuName(menu.getName()).menuPrice(menu.getPrice())
+                .imageResponses(menu.getImages().stream().map(image -> ImageResponse.builder()
+                        .url(APIUrl.IMAGE_DOWNLOAD_API+"/"+image.getId())
+                        .name(image.getName()).build()).toList()).build();
+    }
+
+    private Page<MenuResponse> convertToPageMenuResponse(Page<Menu> menuResponses){
+        return menuResponses.map(this::convertToMenuResponse);
     }
 }

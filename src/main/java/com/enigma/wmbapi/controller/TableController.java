@@ -28,23 +28,21 @@ public class TableController {
     @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN')")
     @PostMapping
     public ResponseEntity<CommonResponse<TableResponse>> addTable(@RequestBody NewTableRequest request) {
-        Table table = tableService.addTable(request);
-        TableResponse tableResponse = TableResponse.builder().tableId(table.getId()).tableName(table.getName()).build();
+        TableResponse table = tableService.addTable(request);
         CommonResponse<TableResponse> response = CommonResponse.<TableResponse>builder()
                 .statusCode(HttpStatus.CREATED.value())
                 .message(ResponseMessage.SUCCESS_SAVE_DATA)
-                .data(tableResponse).build();
+                .data(table).build();
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @GetMapping(path = "/{id}")
     public ResponseEntity<CommonResponse<TableResponse>> getTableById(@PathVariable String id) {
-        Table table = tableService.getTableById(id);
-        TableResponse tableResponse = TableResponse.builder().tableId(table.getId()).tableName(table.getName()).build();
+        TableResponse table = tableService.getTableById(id);
         CommonResponse<TableResponse> response = CommonResponse.<TableResponse>builder()
                 .statusCode(HttpStatus.OK.value())
                 .message(ResponseMessage.SUCCESS_GET_DATA)
-                .data(tableResponse).build();
+                .data(table).build();
         return ResponseEntity.ok(response);
     }
 
@@ -59,8 +57,7 @@ public class TableController {
         SearchTableRequest request = SearchTableRequest.builder()
                 .page(page).size(size).sortBy(sortBy).direction(direction)
                 .name(name).build();
-        Page<Table> tables = tableService.getAllTable(request);
-        Page<TableResponse> tableResponses = tables.map(table -> TableResponse.builder().tableId(table.getId()).tableName(table.getName()).build());
+        Page<TableResponse> tables = tableService.getAllTable(request);
         PagingResponse pagingResponse = PagingResponse.builder()
                 .totalPages(tables.getTotalPages())
                 .totalElement(tables.getTotalElements())
@@ -71,7 +68,7 @@ public class TableController {
         CommonResponse<List<TableResponse>> response = CommonResponse.<List<TableResponse>>builder()
                 .statusCode(HttpStatus.OK.value())
                 .message(ResponseMessage.SUCCESS_GET_DATA)
-                .data(tableResponses.getContent())
+                .data(tables.getContent())
                 .paging(pagingResponse).build();
         return ResponseEntity.ok(response);
     }
@@ -79,24 +76,22 @@ public class TableController {
     @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN')")
     @PutMapping
     public ResponseEntity<CommonResponse<TableResponse>> updateTable(@RequestBody UpdateTableRequest request) {
-        Table table = tableService.updateTable(request);
-        TableResponse tableResponse = TableResponse.builder().tableId(table.getId()).tableName(table.getName()).build();
+        TableResponse table = tableService.updateTable(request);
         CommonResponse<TableResponse> response = CommonResponse.<TableResponse>builder()
                 .statusCode(HttpStatus.ACCEPTED.value())
                 .message(ResponseMessage.SUCCESS_UPDATE_DATA)
-                .data(tableResponse).build();
+                .data(table).build();
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(response);
     }
 
     @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<CommonResponse<TableResponse>> deleteById(@PathVariable String id) {
-        Table table = tableService.deleteById(id);
-        TableResponse tableResponse = TableResponse.builder().tableId(table.getId()).tableName(table.getName()).build();
+        TableResponse table = tableService.deleteById(id);
         CommonResponse<TableResponse> response = CommonResponse.<TableResponse>builder()
                 .statusCode(HttpStatus.OK.value())
                 .message(ResponseMessage.SUCCESS_DELETE_DATA)
-                .data(tableResponse).build();
+                .data(table).build();
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 }

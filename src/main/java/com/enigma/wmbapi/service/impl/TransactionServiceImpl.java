@@ -5,13 +5,8 @@ import com.enigma.wmbapi.constant.TransTypeId;
 import com.enigma.wmbapi.dto.request.NewTransactionRequest;
 import com.enigma.wmbapi.dto.request.SearchTransactionRequest;
 import com.enigma.wmbapi.dto.request.UpdateStatusRequest;
-import com.enigma.wmbapi.dto.response.PaymentResponse;
-import com.enigma.wmbapi.dto.response.TableResponse;
-import com.enigma.wmbapi.dto.response.TransactionDetailResponse;
-import com.enigma.wmbapi.dto.response.TransactionResponse;
-import com.enigma.wmbapi.entity.Payment;
-import com.enigma.wmbapi.entity.Transaction;
-import com.enigma.wmbapi.entity.TransactionDetail;
+import com.enigma.wmbapi.dto.response.*;
+import com.enigma.wmbapi.entity.*;
 import com.enigma.wmbapi.repository.*;
 import com.enigma.wmbapi.service.*;
 import com.enigma.wmbapi.util.DateUtil;
@@ -39,23 +34,35 @@ public class TransactionServiceImpl implements TransactionService {
     private final TransTypeService transTypeService;
     private final MenuService menuService;
     private final PaymentService paymentService;
+    private final UserService userService;
+    private final ImageService imageService;
 
     @Transactional(rollbackFor = Exception.class)
     @Override
     public TransactionResponse addTransaction(NewTransactionRequest request) {
         validationUtil.validate(request);
+        CustomerResponse customerResponse = customerService.getCustomerById(request.getCustomerId());
+        TableResponse tableResponse = tableService.getTableById(request.getTableId());
         Transaction transaction = Transaction.builder()
                 .transDate(DateUtil.parseDate(request.getTransactionDate(), "yyyy-MM-dd"))
-                .customer(customerService.getCustomerById(request.getCustomerId()))
-                .table(tableService.getTableById(request.getTableId()))
+                .customer(Customer.builder().id(customerResponse.getCustomerId())
+                        .name(customerResponse.getCustomerName())
+                        .phone(customerResponse.getCustomerMobilePhone())
+                        .userAccount((UserAccount) userService.loadUserByUsername(customerResponse.getCustomerUsername())).build())
+                .table(Table.builder().id(tableResponse.getTableId()).name(tableResponse.getTableName()).build())
                 .transType(transTypeService.getTransTypeById(Enum.valueOf(TransTypeId.class,request.getTransTypeId()))).build();
-        List<TransactionDetail> transactionDetail = request.getTransactionDetails().stream().map(detail -> (
-            TransactionDetail.builder().transaction(transaction)
-                    .menu(menuService.getMenuById(detail.getMenuId()))
+        List<TransactionDetail> transactionDetail = request.getTransactionDetails().stream().map(detail -> {
+            MenuResponse menuResponse = menuService.getMenuById(detail.getMenuId());
+            return TransactionDetail.builder().transaction(transaction)
+                    .menu(Menu.builder().id(menuResponse.getMenuId())
+                            .name(menuResponse.getMenuName())
+                            .price(menuResponse.getMenuPrice())
+                            .images(menuResponse.getImageResponses().stream().map(imageResponse ->
+                                    imageService.getByName(imageResponse.getName())).toList()).build())
                     .qty(detail.getMenuQuantity())
-                    .price(menuService.getMenuById(detail.getMenuId()).getPrice())
-                    .build()
-        )).toList();
+                    .price(menuResponse.getMenuPrice())
+                    .build();
+        }).toList();
         transaction.setTransactionDetails(transactionDetail);
         Payment payment = paymentService.createPayment(transaction);
         transaction.setPayment(payment);

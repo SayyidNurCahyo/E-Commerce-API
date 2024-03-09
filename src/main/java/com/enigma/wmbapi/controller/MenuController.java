@@ -42,18 +42,11 @@ public class MenuController {
         try {
             NewMenuRequest request = objectMapper.readValue(jsonMenu, new TypeReference<NewMenuRequest>() {});
             request.setImages(images);
-            Menu menuAdded = menuService.addMenu(request);
-            MenuResponse menuResponse = MenuResponse.builder()
-                    .menuId(menuAdded.getId())
-                    .menuName(menuAdded.getName())
-                    .menuPrice(menuAdded.getPrice())
-                    .imageResponses(menuAdded.getImages().stream().map(image -> ImageResponse.builder()
-                            .url(APIUrl.IMAGE_DOWNLOAD_API+"/"+image.getId())
-                            .name(image.getName()).build()).toList()).build();
+            MenuResponse menuAdded = menuService.addMenu(request);
             response = CommonResponse.<MenuResponse>builder()
                     .statusCode(HttpStatus.CREATED.value())
                     .message(ResponseMessage.SUCCESS_SAVE_DATA)
-                    .data(menuResponse).build();
+                    .data(menuAdded).build();
             return ResponseEntity.status(HttpStatus.CREATED).body(response);
         }catch (IOException e){
             response = CommonResponse.<MenuResponse>builder().message(ResponseMessage.ERROR_INTERNAL_SERVER)
@@ -64,18 +57,11 @@ public class MenuController {
 
     @GetMapping(path = "/{id}")
     public ResponseEntity<CommonResponse<MenuResponse>> getMenuById(@PathVariable String id) {
-        Menu menu = menuService.getMenuById(id);
-        MenuResponse menuResponse = MenuResponse.builder()
-                .menuId(menu.getId())
-                .menuName(menu.getName())
-                .menuPrice(menu.getPrice())
-                .imageResponses(menu.getImages().stream().map(image -> ImageResponse.builder()
-                        .url(APIUrl.IMAGE_DOWNLOAD_API+"/"+image.getId())
-                        .name(image.getName()).build()).toList()).build();
+        MenuResponse menu = menuService.getMenuById(id);
         CommonResponse<MenuResponse> response = CommonResponse.<MenuResponse>builder()
                 .statusCode(HttpStatus.OK.value())
                 .message(ResponseMessage.SUCCESS_GET_DATA)
-                .data(menuResponse).build();
+                .data(menu).build();
         return ResponseEntity.ok(response);
     }
 
@@ -91,14 +77,7 @@ public class MenuController {
         SearchMenuRequest request = SearchMenuRequest.builder()
                 .page(page).size(size).sortBy(sortBy).direction(direction)
                 .name(name).price(price).build();
-        Page<Menu> menus = menuService.getAllMenu(request);
-        Page<MenuResponse> menuResponses = menus.map(menu -> MenuResponse.builder()
-                .menuId(menu.getId())
-                .menuName(menu.getName())
-                .menuPrice(menu.getPrice())
-                .imageResponses(menu.getImages().stream().map(image -> ImageResponse.builder()
-                        .url(APIUrl.IMAGE_DOWNLOAD_API+"/"+image.getId())
-                        .name(image.getName()).build()).toList()).build());
+        Page<MenuResponse> menus = menuService.getAllMenu(request);
         PagingResponse pagingResponse = PagingResponse.builder()
                 .totalPages(menus.getTotalPages())
                 .totalElement(menus.getTotalElements())
@@ -109,7 +88,7 @@ public class MenuController {
         CommonResponse<List<MenuResponse>> response = CommonResponse.<List<MenuResponse>>builder()
                 .statusCode(HttpStatus.OK.value())
                 .message(ResponseMessage.SUCCESS_GET_DATA)
-                .data(menuResponses.getContent())
+                .data(menus.getContent())
                 .paging(pagingResponse).build();
         return ResponseEntity.ok(response);
     }
@@ -122,18 +101,11 @@ public class MenuController {
         try {
             UpdateMenuRequest request = objectMapper.readValue(jsonMenu, new TypeReference<UpdateMenuRequest>() {});
             if (images!=null) request.setImages(images);
-            Menu menu = menuService.updateMenu(request);
-            MenuResponse menuResponse = MenuResponse.builder()
-                    .menuId(menu.getId())
-                    .menuName(menu.getName())
-                    .menuPrice(menu.getPrice())
-                    .imageResponses(menu.getImages().stream().map(image -> ImageResponse.builder()
-                            .url(APIUrl.IMAGE_DOWNLOAD_API+"/"+image.getId())
-                            .name(image.getName()).build()).toList()).build();
+            MenuResponse menu = menuService.updateMenu(request);
             response = CommonResponse.<MenuResponse>builder()
                     .statusCode(HttpStatus.ACCEPTED.value())
                     .message(ResponseMessage.SUCCESS_UPDATE_DATA)
-                    .data(menuResponse).build();
+                    .data(menu).build();
             return ResponseEntity.status(HttpStatus.ACCEPTED).body(response);
         }catch (IOException e){
             response = CommonResponse.<MenuResponse>builder().message(ResponseMessage.ERROR_INTERNAL_SERVER)
@@ -145,18 +117,11 @@ public class MenuController {
     @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<CommonResponse<MenuResponse>> deleteById(@PathVariable String id) {
-        Menu menu = menuService.deleteById(id);
-        MenuResponse menuResponse = MenuResponse.builder()
-                .menuId(menu.getId())
-                .menuName(menu.getName())
-                .menuPrice(menu.getPrice())
-                .imageResponses(menu.getImages().stream().map(image -> ImageResponse.builder()
-                        .url(APIUrl.IMAGE_DOWNLOAD_API+"/"+image.getId())
-                        .name(image.getName()).build()).toList()).build();
+        MenuResponse menu = menuService.deleteById(id);
         CommonResponse<MenuResponse> response = CommonResponse.<MenuResponse>builder()
                 .statusCode(HttpStatus.OK.value())
                 .message(ResponseMessage.SUCCESS_DELETE_DATA)
-                .data(menuResponse).build();
+                .data(menu).build();
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 }
