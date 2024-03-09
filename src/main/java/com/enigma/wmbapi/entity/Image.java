@@ -1,6 +1,7 @@
 package com.enigma.wmbapi.entity;
 
 import com.enigma.wmbapi.constant.ConstantTable;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import jakarta.persistence.Table;
 import lombok.*;
@@ -16,6 +17,10 @@ public class Image {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
+    @ManyToOne
+    @JoinColumn(name = "menu_id", referencedColumnName = "id", nullable = false)
+    @JsonBackReference
+    private Menu menu;
     @Column(name = "name", nullable = false)
     private String name;
     @Column(name = "path", nullable = false)

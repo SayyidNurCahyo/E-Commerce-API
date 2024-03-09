@@ -1,9 +1,12 @@
 package com.enigma.wmbapi.entity;
 
 import com.enigma.wmbapi.constant.ConstantTable;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.persistence.Table;
 import lombok.*;
+
+import java.util.List;
 
 @Getter
 @Setter
@@ -23,9 +26,9 @@ public class Menu {
     @Column(name = "price", nullable = false, columnDefinition = "BIGINT CHECK (price>=0)")
     private Long price;
 
-    @OneToOne
-    @JoinColumn(name = "image_id", unique = true)
-    private Image image;
+    @OneToMany(mappedBy = "menu")
+    @JsonManagedReference
+    private List<Image> images;
 }
 
 

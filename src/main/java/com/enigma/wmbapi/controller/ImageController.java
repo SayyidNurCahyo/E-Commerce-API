@@ -1,6 +1,7 @@
 package com.enigma.wmbapi.controller;
 
 import com.enigma.wmbapi.constant.APIUrl;
+import com.enigma.wmbapi.service.ImageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;

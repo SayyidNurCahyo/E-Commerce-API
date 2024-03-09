@@ -4,6 +4,9 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 @Getter
 @Setter
@@ -16,4 +19,6 @@ public class NewMenuRequest {
     @NotNull(message = "Price is Required")
     @Min(value = 0, message = "Price Must Be Greater Than Or Equal 0")
     private Long price;
+    @NotNull(message = "Menu Image is Required")
+    private List<MultipartFile> images;
 }

@@ -3,10 +3,13 @@ package com.enigma.wmbapi.service.impl;
 import com.enigma.wmbapi.dto.request.NewMenuRequest;
 import com.enigma.wmbapi.dto.request.SearchMenuRequest;
 import com.enigma.wmbapi.dto.request.UpdateMenuRequest;
+import com.enigma.wmbapi.entity.Image;
 import com.enigma.wmbapi.entity.Menu;
 import com.enigma.wmbapi.repository.MenuRepository;
+import com.enigma.wmbapi.service.ImageService;
 import com.enigma.wmbapi.service.MenuService;
 import com.enigma.wmbapi.util.ValidationUtil;
+import jakarta.validation.ConstraintViolationException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -15,19 +18,33 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static java.awt.SystemColor.menu;
 
 @Service
 @RequiredArgsConstructor
 public class MenuServiceImpl implements MenuService {
     private final MenuRepository menuRepository;
     private final ValidationUtil validationUtil;
+    private final ImageService imageService;
 
     @Transactional(rollbackFor = Exception.class)
     @Override
     public Menu addMenu(NewMenuRequest request) {
         validationUtil.validate(request);
+        if (request.getImages().isEmpty()) throw new ConstraintViolationException("Menu Image is Required", null);
         Menu menu = Menu.builder().name(request.getName()).price(request.getPrice()).build();
+        List<Image> images = new ArrayList<>();
+        for (MultipartFile image:request.getImages()){
+            Image imageAdded = imageService.addImage(menu, image);
+            images.add(imageAdded);
+        }
+        menu.setImages(images);
         return menuRepository.saveAndFlush(menu);
     }
 
@@ -54,8 +71,19 @@ public class MenuServiceImpl implements MenuService {
     @Override
     public Menu updateMenu(UpdateMenuRequest request) {
         validationUtil.validate(request);
-        menuRepository.findById(request.getId()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"Menu Not Found"));
-        Menu menu = Menu.builder().id(request.getId()).name(request.getName()).price(request.getPrice()).build();
+        Menu menu = menuRepository.findById(request.getId()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"Menu Not Found"));
+        menu.setName(request.getName());
+        menu.setPrice(request.getPrice());
+        if (request.getImages()!=null){
+            List<Image> imageList = new ArrayList<>();
+            for (MultipartFile image: request.getImages()){
+                Image imageNew = imageService.addImage(menu,image);
+                imageList.add(imageNew);
+            }
+            List<String> imageIdOld = menu.getImages().stream().map(Image::getId).toList();
+            menu.setImages(imageList);
+            imageIdOld.forEach(imageService::deleteById);
+        }
         return menuRepository.saveAndFlush(menu);
     }
 
