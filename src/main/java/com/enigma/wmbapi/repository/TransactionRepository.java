@@ -13,6 +13,8 @@ import java.util.Optional;
 
 @Repository
 public interface TransactionRepository extends JpaRepository<Transaction, String> {
-    @Query(value = "SELECT * FROM t_transaction WHERE customer_id = :customerId", nativeQuery = true)
-    Optional<Page<Transaction>> findAllByCustomerId(@Param("customerId") String customerId, Pageable pageable);
+    @Query(value = "SELECT * FROM t_bill WHERE customer_id = :customer_id", nativeQuery = true)
+    Page<Transaction> findCustomerId(@Param(value = "customer_id") String customer_id, Pageable pageable);
+    @Query(value = "SELECT * FROM t_bill WHERE customer_id = :customer_id", nativeQuery = true)
+    List<Transaction> findTr(@Param(value = "customer_id") String customer_id);
 }

@@ -11,6 +11,6 @@ import lombok.*;
 @Builder
 public class NewTableRequest {
     @NotBlank(message = "Name is Required")
-    @Pattern(regexp = "^T\\d{2}$",message = "Table Format Incorrect")
+    @Pattern(regexp = "^T\\d{2}$",message = "Table Format Incorrect, Should Be T**")
     private String name;
 }

@@ -1,6 +1,7 @@
 package com.enigma.wmbapi.entity;
 
 import com.enigma.wmbapi.constant.ConstantTable;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import jakarta.persistence.Table;
 import lombok.*;
@@ -14,7 +15,7 @@ import lombok.*;
 @Table(name = ConstantTable.PAYMENT)
 public class Payment {
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
+//    @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
     @Column(name = "token", nullable = false)
     private String token;
@@ -23,5 +24,6 @@ public class Payment {
     @Column(name = "transaction_status", nullable = false)
     private String transactionStatus;
     @OneToOne(mappedBy = "payment")
+    @JsonBackReference
     private Transaction transaction;
 }

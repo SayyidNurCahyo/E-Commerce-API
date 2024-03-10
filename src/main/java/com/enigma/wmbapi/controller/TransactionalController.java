@@ -6,6 +6,7 @@ import com.enigma.wmbapi.dto.request.NewTransactionRequest;
 import com.enigma.wmbapi.dto.request.SearchTransactionRequest;
 import com.enigma.wmbapi.dto.request.UpdateStatusRequest;
 import com.enigma.wmbapi.dto.response.*;
+import com.enigma.wmbapi.entity.Transaction;
 import com.enigma.wmbapi.security.AuthenticatedUser;
 import com.enigma.wmbapi.service.TransactionService;
 import lombok.RequiredArgsConstructor;
@@ -60,26 +61,27 @@ public class TransactionalController {
     }
 
     @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN') or @authenticatedUser.hasId(#customerId)")
-    @GetMapping(path = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<CommonResponse<List<TransactionResponse>>> getAllTransactionByCustomerId(
-            @PathVariable String customerId,
-            @RequestParam(name = "page", defaultValue = "1") Integer page,
-            @RequestParam(name = "size", defaultValue = "10") Integer size
+    @GetMapping(path = "/{customerId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<CommonResponse<List<Transaction>>> getAllTransactionByCustomerId(
+            @PathVariable String customerId
+//            @RequestParam(name = "page", defaultValue = "1") Integer page,
+//            @RequestParam(name = "size", defaultValue = "5") Integer size
     ) {
-        SearchTransactionRequest request = SearchTransactionRequest.builder().page(page).size(size).build();
-        Page<TransactionResponse> transactions = transactionService.getAllByCustomerId(customerId, request);
-        PagingResponse paging = PagingResponse.builder()
-                .page(transactions.getPageable().getPageNumber() + 1)
-                .size(transactions.getPageable().getPageSize())
-                .totalPages(transactions.getTotalPages())
-                .totalElement(transactions.getTotalElements())
-                .hasNext(transactions.hasNext())
-                .hasPrevious(transactions.hasPrevious()).build();
-        CommonResponse<List<TransactionResponse>> response = CommonResponse.<List<TransactionResponse>>builder()
+//        SearchTransactionRequest request = SearchTransactionRequest.builder().page(page).size(size).build();
+//        Page<TransactionResponse> transactions = transactionService.getAllByCustomerId(customerId, request);
+        List<Transaction> transactions = transactionService.getAllByCustomerId(customerId);
+//        PagingResponse paging = PagingResponse.builder()
+//                .page(transactions.getPageable().getPageNumber())
+//                .size(transactions.getPageable().getPageSize())
+//                .totalPages(transactions.getTotalPages())
+//                .totalElement(transactions.getTotalElements())
+//                .hasNext(transactions.hasNext())
+//                .hasPrevious(transactions.hasPrevious()).build();
+        CommonResponse<List<Transaction>> response = CommonResponse.<List<Transaction>>builder()
                 .statusCode(HttpStatus.OK.value())
                 .message(ResponseMessage.SUCCESS_GET_DATA)
-                .data(transactions.getContent())
-                .paging(paging).build();
+                .data(transactions)
+                .build();
         return ResponseEntity.ok(response);
     }
 

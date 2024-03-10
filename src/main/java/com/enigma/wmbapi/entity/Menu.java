@@ -27,6 +27,7 @@ public class Menu {
     private Long price;
 
     @OneToMany(mappedBy = "menu")
+    @JsonManagedReference
     private List<Image> images;
 }
 

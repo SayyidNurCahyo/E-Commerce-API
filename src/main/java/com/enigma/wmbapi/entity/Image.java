@@ -19,6 +19,7 @@ public class Image {
     private String id;
     @ManyToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "menu_id", referencedColumnName = "id", nullable = false)
+    @JsonBackReference
     private Menu menu;
     @Column(name = "name", nullable = false)
     private String name;

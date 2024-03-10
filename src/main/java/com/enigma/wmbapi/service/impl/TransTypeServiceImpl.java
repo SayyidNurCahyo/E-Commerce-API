@@ -2,6 +2,7 @@ package com.enigma.wmbapi.service.impl;
 
 import com.enigma.wmbapi.constant.TransTypeId;
 import com.enigma.wmbapi.dto.response.TransTypeResponse;
+import com.enigma.wmbapi.entity.Role;
 import com.enigma.wmbapi.entity.TransType;
 import com.enigma.wmbapi.repository.TransTypeRepository;
 import com.enigma.wmbapi.service.TransTypeService;
@@ -19,10 +20,10 @@ import java.util.List;
 public class TransTypeServiceImpl implements TransTypeService {
     private final TransTypeRepository transTypeRepository;
 
-    @Transactional(readOnly = true)
+    @Transactional(rollbackFor = Exception.class)
     @Override
-    public TransType getTransTypeById(TransTypeId id) {
-        return transTypeRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"TransType Not Found"));
+    public TransType getTransTypeOrSave(TransTypeId id, String description) {
+        return transTypeRepository.findById(id).orElseGet(()->transTypeRepository.saveAndFlush(TransType.builder().id(id).description(description).build()));
     }
 
     @Transactional(readOnly = true)

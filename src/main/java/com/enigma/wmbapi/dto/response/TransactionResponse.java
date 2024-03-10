@@ -15,7 +15,7 @@ import java.util.List;
 @Builder
 public class TransactionResponse {
     private String transactionId;
-    private Date transactionDate;
+    private String transactionDate;
     private String customerName;
     private String customerPhone;
     private String table;

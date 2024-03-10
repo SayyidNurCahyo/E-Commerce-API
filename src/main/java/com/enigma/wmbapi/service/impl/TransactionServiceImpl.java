@@ -23,6 +23,7 @@ import org.springframework.web.server.ResponseStatusException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -48,13 +49,12 @@ public class TransactionServiceImpl implements TransactionService {
                         .name(customerResponse.getCustomerName())
                         .phone(customerResponse.getCustomerPhone())
                         .userAccount((UserAccount) userService.loadUserByUsername(customerResponse.getCustomerUsername())).build()).build();
-        TableResponse tableResponse=null;
-        if (request.getTableId()!=null) {
-            tableResponse = tableService.getTableById(request.getTableId());
+        if (request.getTableId()!=null && !request.getTableId().isEmpty()) {
+            TableResponse tableResponse = tableService.getTableById(request.getTableId());
             transaction.setTable(Table.builder().id(tableResponse.getTableId()).name(tableResponse.getTableName()).build());
-            transaction.setTransType(TransType.builder().id(TransTypeId.EI).description("Eat In").build());
+            transaction.setTransType(transTypeService.getTransTypeOrSave(TransTypeId.EI,"Eat In"));
         } else {
-            transaction.setTransType(TransType.builder().id(TransTypeId.TA).description("Take Away").build());
+            transaction.setTransType(transTypeService.getTransTypeOrSave(TransTypeId.TA,"Take Away"));
         }
         List<TransactionDetail> transactionDetail = request.getTransactionDetails().stream().map(detail -> {
             MenuResponse menuResponse = menuService.getMenuById(detail.getMenuId());
@@ -75,16 +75,17 @@ public class TransactionServiceImpl implements TransactionService {
                 .token(payment.getToken())
                 .redirectUrl(payment.getRedirectURL())
                 .transactionStatus(payment.getTransactionStatus()).build();
-        Transaction trSaved = transactionRepository.save(transaction);
-        return TransactionResponse.builder().transactionId(trSaved.getId())
-                .transactionDate(trSaved.getTransDate()).customerName(trSaved.getCustomer().getName())
+        Transaction trSaved = transactionRepository.saveAndFlush(transaction);
+        TransactionResponse response = TransactionResponse.builder().transactionId(trSaved.getId())
+                .transactionDate(trSaved.getTransDate().toString()).customerName(trSaved.getCustomer().getName())
                 .customerPhone(trSaved.getCustomer().getPhone())
                 .transactionType(trSaved.getTransType().getDescription())
-                .table(trSaved.getTable().getName())
                 .transactionDetails(trSaved.getTransactionDetails().stream().map(detail -> (TransactionDetailResponse.builder()
                         .detailId(detail.getId()).menu(detail.getMenu().getName())
                         .menuQuantity(detail.getQty()).menuPrice(detail.getPrice()).build())).toList())
                 .paymentResponse(paymentResponse).build();
+        if (trSaved.getTable()!=null) response.setTable(trSaved.getTable().getName());
+        return response;
     }
 
     @Transactional(readOnly = true)
@@ -104,7 +105,7 @@ public class TransactionServiceImpl implements TransactionService {
 
             return TransactionResponse.builder()
                     .transactionId(trx.getId())
-                    .transactionDate(trx.getTransDate())
+                    .transactionDate(trx.getTransDate().toString())
                     .customerName(trx.getCustomer().getName())
                     .customerPhone(trx.getCustomer().getPhone())
                     .table(trx.getTable().getName())
@@ -116,36 +117,34 @@ public class TransactionServiceImpl implements TransactionService {
 
     @Transactional(readOnly = true)
     @Override
-    public Page<TransactionResponse> getAllByCustomerId(String customerId, SearchTransactionRequest request) {
-        Pageable pageable = PageRequest.of(request.getPage(), request.getSize());
-        Page<Transaction> transactions = transactionRepository.findAllByCustomerId(customerId, pageable).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, ResponseMessage.ERROR_NOT_FOUND));
+    public List<Transaction> getAllByCustomerId(String customerId) {
+//        Pageable pageable = PageRequest.of(request.getPage(), request.getSize());
+        return transactionRepository.findTr(customerId);
 
-        return transactions.map(trx -> {
-            List<TransactionDetailResponse> trxDetailResponses = trx.getTransactionDetails().stream().map(detail ->
-                    TransactionDetailResponse.builder()
-                            .detailId(detail.getId())
-                            .menu(detail.getMenu().getName())
-                            .menuQuantity(detail.getQty())
-                            .menuPrice(detail.getPrice())
-                            .build()).toList();
-
-            return TransactionResponse.builder()
-                    .transactionId(trx.getId())
-                    .transactionDate(trx.getTransDate())
-                    .customerName(trx.getCustomer().getName())
-                    .customerPhone(trx.getCustomer().getPhone())
-                    .table(trx.getTable().getName())
-                    .transactionType(trx.getTransType().getDescription())
-                    .transactionDetails(trxDetailResponses)
-                    .build();
-        });
+//        return transactions.map(trx -> {
+//            List<TransactionDetailResponse> trxDetailResponses = trx.getTransactionDetails().stream().map(detail ->
+//                    TransactionDetailResponse.builder()
+//                            .detailId(detail.getId())
+//                            .menu(detail.getMenu().getName())
+//                            .menuQuantity(detail.getQty())
+//                            .menuPrice(detail.getPrice())
+//                            .build()).toList();
+//            return TransactionResponse.builder()
+//                    .transactionId(trx.getId())
+//                    .transactionDate(trx.getTransDate().toString())
+//                    .customerName(trx.getCustomer().getName())
+//                    .customerPhone(trx.getCustomer().getPhone())
+//                    .table(trx.getTable().getName())
+//                    .transactionType(trx.getTransType().getDescription())
+//                    .transactionDetails(trxDetailResponses)
+//                    .build();
+//        });
     }
 
     @Transactional(rollbackFor = Exception.class)
     @Override
     public void updateStatus(UpdateStatusRequest request) {
-        Transaction transaction = transactionRepository.findById(request.getOrderId()).orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND, ResponseMessage.ERROR_NOT_FOUND));
-        Payment payment = transaction.getPayment();
+        Payment payment = paymentService.findById(request.getOrderId());
         payment.setTransactionStatus(request.getTransactionStatus());
     }
 }

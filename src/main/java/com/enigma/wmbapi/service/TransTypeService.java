@@ -7,6 +7,6 @@ import com.enigma.wmbapi.entity.TransType;
 import java.util.List;
 
 public interface TransTypeService {
-    TransType getTransTypeById(TransTypeId id);
+    TransType getTransTypeOrSave(TransTypeId id, String desc);
     List<TransTypeResponse> getAllTransType();
 }

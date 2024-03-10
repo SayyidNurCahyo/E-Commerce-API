@@ -25,7 +25,7 @@ public class Transaction {
     private String id;
 
     @Column(name = "trans_date", updatable = false)
-    @Temporal(TemporalType.TIMESTAMP)
+    @Temporal(TemporalType.DATE)
     @JsonFormat(pattern = "yyyy-MM-dd")
     private Date transDate;
 
@@ -47,5 +47,6 @@ public class Transaction {
 
     @OneToOne
     @JoinColumn(name = "payment_id", unique = true)
+    @JsonManagedReference
     private Payment payment;
 }

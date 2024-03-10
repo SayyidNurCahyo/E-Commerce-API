@@ -7,10 +7,12 @@ import com.enigma.wmbapi.dto.response.TransactionResponse;
 import com.enigma.wmbapi.entity.Transaction;
 import org.springframework.data.domain.Page;
 
+import java.util.List;
+
 public interface TransactionService {
 
     TransactionResponse addTransaction(NewTransactionRequest request);
     Page<TransactionResponse> getAllTransaction(SearchTransactionRequest request);
-    Page<TransactionResponse> getAllByCustomerId(String customerId, SearchTransactionRequest request);
+    List<Transaction> getAllByCustomerId(String customerId);
     void updateStatus(UpdateStatusRequest request);
 }

@@ -1,5 +1,6 @@
 package com.enigma.wmbapi.service.impl;
 
+import com.enigma.wmbapi.constant.ResponseMessage;
 import com.enigma.wmbapi.dto.request.PaymentDetailRequest;
 import com.enigma.wmbapi.dto.request.PaymentItemDetailRequest;
 import com.enigma.wmbapi.dto.request.PaymentRequest;
@@ -13,13 +14,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestClient;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 @Service
 public class PaymentServiceImpl implements PaymentService {
@@ -47,7 +51,7 @@ public class PaymentServiceImpl implements PaymentService {
                         .quantity(transactionDetail.getQty()).build()).toList();
         PaymentRequest request = PaymentRequest.builder()
                 .paymentDetail(PaymentDetailRequest.builder()
-                        .orderId(transaction.getId())
+                        .orderId(UUID.randomUUID().toString())
                         .amount(amount).build())
                 .paymentItemDetails(itemDetailRequestList)
                 .paymentMethod(List.of("credit_card", "cimb_clicks",
@@ -59,10 +63,15 @@ public class PaymentServiceImpl implements PaymentService {
                 .header(HttpHeaders.AUTHORIZATION, "Basic " + SECRET_KEY)
                 .retrieve().toEntity(new ParameterizedTypeReference<Map<String, String>>() {});
         Map<String, String> body = response.getBody();
-        Payment payment = Payment.builder().token(body.get("token"))
+        Payment payment = Payment.builder().id(request.getPaymentDetail().getOrderId()).token(body.get("token"))
                 .redirectURL(body.get("redirect_url"))
                 .transactionStatus("ordered").build();
         return paymentRepository.saveAndFlush(payment);
+    }
+
+    @Override
+    public Payment findById(String id) {
+        return paymentRepository.findById(id).orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND, ResponseMessage.ERROR_NOT_FOUND));
     }
 
     @Transactional(rollbackFor = Exception.class)
@@ -71,7 +80,7 @@ public class PaymentServiceImpl implements PaymentService {
         List<String> failedStatus = List.of("deny", "failure", "cancel", "expire");
         List<Payment> payments = paymentRepository.findAllByTransactionStatusIn(failedStatus);
         for (Payment payment:payments){
-            payment.setTransactionStatus("stock returned");
+            payment.setTransactionStatus("transaction canceled");
         }
     }
 }
