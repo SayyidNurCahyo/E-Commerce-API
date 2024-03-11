@@ -8,6 +8,7 @@ import com.enigma.wmbapi.dto.response.PagingResponse;
 import com.enigma.wmbapi.dto.response.TransTypeResponse;
 import com.enigma.wmbapi.entity.TransType;
 import com.enigma.wmbapi.service.TransTypeService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -22,6 +23,7 @@ import java.util.List;
 public class TransTypeController {
     private final TransTypeService transTypeService;
 
+    @SecurityRequirement(name = "Bearer Authentication")
     @GetMapping
     public ResponseEntity<CommonResponse<List<TransTypeResponse>>> getAllTransType() {
         List<TransTypeResponse> transTypes = transTypeService.getAllTransType();

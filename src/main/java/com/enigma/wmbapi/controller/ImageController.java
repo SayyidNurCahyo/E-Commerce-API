@@ -2,6 +2,7 @@ package com.enigma.wmbapi.controller;
 
 import com.enigma.wmbapi.constant.APIUrl;
 import com.enigma.wmbapi.service.ImageService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class ImageController {
     private final ImageService imageService;
 
+    @SecurityRequirement(name = "Bearer Authentication")
     @GetMapping(path = APIUrl.IMAGE_DOWNLOAD_API + "/{imageId}")
     public ResponseEntity<Resource> download(@PathVariable(name = "imageId") String id){
         Resource resource = imageService.getById(id);

@@ -10,6 +10,7 @@ import com.enigma.wmbapi.dto.response.PagingResponse;
 import com.enigma.wmbapi.security.AuthenticatedUser;
 import com.enigma.wmbapi.service.AdminService;
 import com.enigma.wmbapi.service.AdminService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -27,6 +28,7 @@ public class AdminController {
     private final AdminService adminService;
     private final AuthenticatedUser authenticatedUser;
 
+    @SecurityRequirement(name = "Bearer Authentication")
     @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN')")
     @GetMapping(path = "/{id}")
     public ResponseEntity<CommonResponse<AdminResponse>> getAdminById(@PathVariable String id) {
@@ -38,6 +40,7 @@ public class AdminController {
         return ResponseEntity.ok(response);
     }
 
+    @SecurityRequirement(name = "Bearer Authentication")
     @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN')")
     @GetMapping
     public ResponseEntity<CommonResponse<List<AdminResponse>>> getAllAdmin(
@@ -67,6 +70,7 @@ public class AdminController {
         return ResponseEntity.ok(response);
     }
 
+    @SecurityRequirement(name = "Bearer Authentication")
     @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN')")
     @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<CommonResponse<AdminResponse>> updateAdmin(@RequestBody UpdateAdminRequest request) {
@@ -78,6 +82,7 @@ public class AdminController {
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(response);
     }
 
+    @SecurityRequirement(name = "Bearer Authentication")
     @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<CommonResponse<AdminResponse>> deleteById(@PathVariable String id) {

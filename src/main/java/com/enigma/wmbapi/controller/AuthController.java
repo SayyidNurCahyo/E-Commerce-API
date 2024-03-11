@@ -9,6 +9,7 @@ import com.enigma.wmbapi.dto.response.LoginResponse;
 import com.enigma.wmbapi.dto.response.RegisterResponse;
 import com.enigma.wmbapi.security.AuthenticatedUser;
 import com.enigma.wmbapi.service.AuthService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -25,6 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthController {
     private final AuthService authService;
 
+    @SecurityRequirement(name = "Bearer Authentication")
     @PostMapping(path = "/register", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<CommonResponse<?>> registerCustomer(@RequestBody RegisterRequest request){
         CommonResponse<RegisterResponse> response = CommonResponse.<RegisterResponse>builder()
@@ -33,6 +35,7 @@ public class AuthController {
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
+    @SecurityRequirement(name = "Bearer Authentication")
     @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN')")
     @PostMapping(path = "/registerAdmin", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<CommonResponse<?>> registerAdmin(@RequestBody RegisterRequest request){
@@ -42,6 +45,7 @@ public class AuthController {
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
+    @SecurityRequirement(name = "Bearer Authentication")
     @PostMapping(value = "/login", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<CommonResponse<?>> login(@RequestBody AuthRequest request){
         LoginResponse loginResponse = authService.login(request);

@@ -15,6 +15,7 @@ import com.enigma.wmbapi.service.MenuService;
 import com.enigma.wmbapi.service.MenuService;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -34,6 +35,7 @@ public class MenuController {
     private final MenuService menuService;
     private final ObjectMapper objectMapper;
 
+    @SecurityRequirement(name = "Bearer Authentication")
     @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN')")
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<CommonResponse<MenuResponse>> addMenu(@RequestPart(name = "menu") String jsonMenu,

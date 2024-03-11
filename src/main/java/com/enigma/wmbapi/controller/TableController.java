@@ -10,6 +10,7 @@ import com.enigma.wmbapi.dto.response.PagingResponse;
 import com.enigma.wmbapi.dto.response.TableResponse;
 import com.enigma.wmbapi.entity.Table;
 import com.enigma.wmbapi.service.TableService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -25,6 +26,7 @@ import java.util.List;
 public class TableController {
     private final TableService tableService;
 
+    @SecurityRequirement(name = "Bearer Authentication")
     @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN')")
     @PostMapping
     public ResponseEntity<CommonResponse<TableResponse>> addTable(@RequestBody NewTableRequest request) {

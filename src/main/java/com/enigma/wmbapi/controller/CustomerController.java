@@ -10,6 +10,7 @@ import com.enigma.wmbapi.entity.Customer;
 import com.enigma.wmbapi.security.AuthenticatedUser;
 import com.enigma.wmbapi.service.CustomerService;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -30,6 +31,7 @@ public class CustomerController {
     private final CustomerService customerService;
     private final AuthenticatedUser authenticatedUser;
 
+    @SecurityRequirement(name = "Bearer Authentication")
     @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN') or @authenticatedUser.hasId(#id)")
     @GetMapping(path = "/{id}")
     public ResponseEntity<CommonResponse<CustomerResponse>> getCustomerById(@PathVariable String id) {
@@ -41,6 +43,7 @@ public class CustomerController {
         return ResponseEntity.ok(response);
     }
 
+    @SecurityRequirement(name = "Bearer Authentication")
     @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN')")
     @GetMapping
     public ResponseEntity<CommonResponse<List<CustomerResponse>>> getAllCustomer(
@@ -70,6 +73,7 @@ public class CustomerController {
         return ResponseEntity.ok(response);
     }
 
+    @SecurityRequirement(name = "Bearer Authentication")
     @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN') or @authenticatedUser.hasId(#request.id)")
     @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<CommonResponse<CustomerResponse>> updateCustomer(@RequestBody UpdateCustomerRequest request) {
@@ -81,6 +85,7 @@ public class CustomerController {
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(response);
     }
 
+    @SecurityRequirement(name = "Bearer Authentication")
     @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN') or @authenticatedUser.hasId(#id)")
     @DeleteMapping("/{id}")
     public ResponseEntity<CommonResponse<CustomerResponse>> deleteById(@PathVariable String id) {

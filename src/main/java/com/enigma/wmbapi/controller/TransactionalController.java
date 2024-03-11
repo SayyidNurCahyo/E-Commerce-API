@@ -9,6 +9,7 @@ import com.enigma.wmbapi.dto.response.*;
 import com.enigma.wmbapi.entity.Transaction;
 import com.enigma.wmbapi.security.AuthenticatedUser;
 import com.enigma.wmbapi.service.TransactionService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -27,6 +28,7 @@ public class TransactionalController {
     private final TransactionService transactionService;
     private final AuthenticatedUser authenticatedUser;
 
+    @SecurityRequirement(name = "Bearer Authentication")
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<CommonResponse<TransactionResponse>> addTransaction(@RequestBody NewTransactionRequest request){
         TransactionResponse transaction = transactionService.addTransaction(request);
