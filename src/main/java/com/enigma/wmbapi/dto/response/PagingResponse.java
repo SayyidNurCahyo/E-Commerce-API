@@ -1,9 +1,11 @@
 package com.enigma.wmbapi.dto.response;
 
-import lombok.Builder;
-import lombok.Data;
+import lombok.*;
 
-@Data
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
 @Builder
 public class PagingResponse {
     private Integer totalPages;

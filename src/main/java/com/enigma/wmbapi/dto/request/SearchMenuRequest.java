@@ -1,10 +1,12 @@
 package com.enigma.wmbapi.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
-import lombok.Builder;
-import lombok.Data;
+import lombok.*;
 
-@Data
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
 @Builder
 public class SearchMenuRequest {
     private Integer size;
