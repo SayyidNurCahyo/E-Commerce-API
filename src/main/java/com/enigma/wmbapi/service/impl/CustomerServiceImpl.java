@@ -70,10 +70,12 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public CustomerResponse deleteById(String id) {
+    public CustomerResponse disableById(String id) {
         Customer customer = customerRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"Customer Not Found"));
-        customerRepository.delete(customer);
-        userAccountRepository.delete(customer.getUserAccount());
+        UserAccount account = customer.getUserAccount();
+        account.setIsEnabled(false);
+        customer.setUserAccount(account);
+        customerRepository.saveAndFlush(customer);
         return convertToCustomerResponse(customer);
     }
 
