@@ -41,12 +41,12 @@ public class TransactionalController {
 
     @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN')")
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<CommonResponse<List<TransactionResponse>>> getAllTransaction(
+    public ResponseEntity<CommonResponse<List<GetTransactionResponse>>> getAllTransaction(
             @RequestParam(name = "page", defaultValue = "1") Integer page,
             @RequestParam(name = "size", defaultValue = "10") Integer size
     ) {
         SearchTransactionRequest request = SearchTransactionRequest.builder().page(page).size(size).build();
-        Page<TransactionResponse> transactions = transactionService.getAllTransaction(request);
+        Page<GetTransactionResponse> transactions = transactionService.getAllTransaction(request);
         PagingResponse paging = PagingResponse.builder()
                 .page(transactions.getPageable().getPageNumber() + 1)
                 .size(transactions.getPageable().getPageSize())
@@ -54,7 +54,7 @@ public class TransactionalController {
                 .totalElement(transactions.getTotalElements())
                 .hasNext(transactions.hasNext())
                 .hasPrevious(transactions.hasPrevious()).build();
-        CommonResponse<List<TransactionResponse>> response = CommonResponse.<List<TransactionResponse>>builder()
+        CommonResponse<List<GetTransactionResponse>> response = CommonResponse.<List<GetTransactionResponse>>builder()
                 .statusCode(HttpStatus.OK.value())
                 .message(ResponseMessage.SUCCESS_GET_DATA)
                 .data(transactions.getContent())
@@ -64,22 +64,11 @@ public class TransactionalController {
 
     @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN') or @authenticatedUser.hasId(#customerId)")
     @GetMapping(path = "/{customerId}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<CommonResponse<List<Transaction>>> getAllTransactionByCustomerId(
+    public ResponseEntity<CommonResponse<List<GetTransactionResponse>>> getAllTransactionByCustomerId(
             @PathVariable String customerId
-//            @RequestParam(name = "page", defaultValue = "1") Integer page,
-//            @RequestParam(name = "size", defaultValue = "5") Integer size
     ) {
-//        SearchTransactionRequest request = SearchTransactionRequest.builder().page(page).size(size).build();
-//        Page<TransactionResponse> transactions = transactionService.getAllByCustomerId(customerId, request);
-        List<Transaction> transactions = transactionService.getAllByCustomerId(customerId);
-//        PagingResponse paging = PagingResponse.builder()
-//                .page(transactions.getPageable().getPageNumber())
-//                .size(transactions.getPageable().getPageSize())
-//                .totalPages(transactions.getTotalPages())
-//                .totalElement(transactions.getTotalElements())
-//                .hasNext(transactions.hasNext())
-//                .hasPrevious(transactions.hasPrevious()).build();
-        CommonResponse<List<Transaction>> response = CommonResponse.<List<Transaction>>builder()
+        List<GetTransactionResponse> transactions = transactionService.getAllByCustomerId(customerId);
+        CommonResponse<List<GetTransactionResponse>> response = CommonResponse.<List<GetTransactionResponse>>builder()
                 .statusCode(HttpStatus.OK.value())
                 .message(ResponseMessage.SUCCESS_GET_DATA)
                 .data(transactions)

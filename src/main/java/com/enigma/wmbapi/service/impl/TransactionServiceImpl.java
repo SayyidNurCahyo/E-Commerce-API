@@ -90,8 +90,39 @@ public class TransactionServiceImpl implements TransactionService {
 
     @Transactional(readOnly = true)
     @Override
-    public Page<TransactionResponse> getAllTransaction(SearchTransactionRequest request) {
-        Pageable pageable = PageRequest.of(request.getPage(), request.getSize());
+    public List<GetTransactionResponse> getTransaction() {
+        List<Transaction> transactions = transactionRepository.findAll();
+
+        return transactions.stream().map(transaction -> {
+            List<TransactionDetailResponse> transactionDetailResponses = transaction.getTransactionDetails().stream().map(detail ->
+                    TransactionDetailResponse.builder()
+                            .detailId(detail.getId())
+                            .menu(detail.getMenu().getName())
+                            .menuQuantity(detail.getQty())
+                            .menuPrice(detail.getPrice())
+                            .build()).toList();
+            String table;
+            if (transaction.getTable()!=null) table = transaction.getTable().getName();
+            else table=null;
+            return GetTransactionResponse.builder()
+                    .transactionId(transaction.getId())
+                    .transactionDate(transaction.getTransDate().toString())
+                    .customerName(transaction.getCustomer().getName())
+                    .customerPhone(transaction.getCustomer().getPhone())
+                    .table(table)
+                    .transactionType(transaction.getTransType().getDescription())
+                    .transactionDetails(transactionDetailResponses)
+                    .transactionStatus(transaction.getPayment().getTransactionStatus())
+                    .build();
+        }).toList();
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public Page<GetTransactionResponse> getAllTransaction(SearchTransactionRequest request) {
+        if (request.getPage()<1) request.setPage(1);
+        if (request.getSize()<1) request.setSize(1);
+        Pageable pageable = PageRequest.of(request.getPage()-1, request.getSize());
         Page<Transaction> transactions = transactionRepository.findAll(pageable);
 
         return transactions.map(trx -> {
@@ -102,43 +133,49 @@ public class TransactionServiceImpl implements TransactionService {
                     .menuQuantity(detail.getQty())
                     .menuPrice(detail.getPrice())
                     .build()).toList();
-
-            return TransactionResponse.builder()
+            String table;
+            if (trx.getTable()!=null) table = trx.getTable().getName();
+            else table=null;
+            return GetTransactionResponse.builder()
                     .transactionId(trx.getId())
                     .transactionDate(trx.getTransDate().toString())
                     .customerName(trx.getCustomer().getName())
                     .customerPhone(trx.getCustomer().getPhone())
-                    .table(trx.getTable().getName())
+                    .table(table)
                     .transactionType(trx.getTransType().getDescription())
                     .transactionDetails(trxDetailResponses)
+                    .transactionStatus(trx.getPayment().getTransactionStatus())
                     .build();
         });
     }
 
     @Transactional(readOnly = true)
     @Override
-    public List<Transaction> getAllByCustomerId(String customerId) {
-//        Pageable pageable = PageRequest.of(request.getPage(), request.getSize());
-        return transactionRepository.findTr(customerId);
+    public List<GetTransactionResponse> getAllByCustomerId(String customerId) {
+        List<Transaction> transactions = transactionRepository.findTr(customerId);
 
-//        return transactions.map(trx -> {
-//            List<TransactionDetailResponse> trxDetailResponses = trx.getTransactionDetails().stream().map(detail ->
-//                    TransactionDetailResponse.builder()
-//                            .detailId(detail.getId())
-//                            .menu(detail.getMenu().getName())
-//                            .menuQuantity(detail.getQty())
-//                            .menuPrice(detail.getPrice())
-//                            .build()).toList();
-//            return TransactionResponse.builder()
-//                    .transactionId(trx.getId())
-//                    .transactionDate(trx.getTransDate().toString())
-//                    .customerName(trx.getCustomer().getName())
-//                    .customerPhone(trx.getCustomer().getPhone())
-//                    .table(trx.getTable().getName())
-//                    .transactionType(trx.getTransType().getDescription())
-//                    .transactionDetails(trxDetailResponses)
-//                    .build();
-//        });
+        return transactions.stream().map(trx -> {
+            List<TransactionDetailResponse> trxDetailResponses = trx.getTransactionDetails().stream().map(detail ->
+                    TransactionDetailResponse.builder()
+                            .detailId(detail.getId())
+                            .menu(detail.getMenu().getName())
+                            .menuQuantity(detail.getQty())
+                            .menuPrice(detail.getPrice())
+                            .build()).toList();
+            String table;
+            if (trx.getTable()!=null) table = trx.getTable().getName();
+            else table=null;
+            return GetTransactionResponse.builder()
+                    .transactionId(trx.getId())
+                    .transactionDate(trx.getTransDate().toString())
+                    .customerName(trx.getCustomer().getName())
+                    .customerPhone(trx.getCustomer().getPhone())
+                    .table(table)
+                    .transactionType(trx.getTransType().getDescription())
+                    .transactionDetails(trxDetailResponses)
+                    .transactionStatus(trx.getPayment().getTransactionStatus())
+                    .build();
+        }).toList();
     }
 
     @Transactional(rollbackFor = Exception.class)

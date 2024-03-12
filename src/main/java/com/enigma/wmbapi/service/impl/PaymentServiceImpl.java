@@ -80,7 +80,7 @@ public class PaymentServiceImpl implements PaymentService {
         List<String> failedStatus = List.of("deny", "failure", "cancel", "expire");
         List<Payment> payments = paymentRepository.findAllByTransactionStatusIn(failedStatus);
         for (Payment payment:payments){
-            payment.setTransactionStatus("transaction canceled");
+            payment.setTransactionStatus("canceled");
         }
     }
 }

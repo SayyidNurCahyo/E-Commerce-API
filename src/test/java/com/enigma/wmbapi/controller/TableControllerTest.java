@@ -59,6 +59,7 @@ class TableControllerTest {
                     CommonResponse<TableResponse> response = objectMapper.readValue(result.getResponse().getContentAsString(), new TypeReference<CommonResponse<TableResponse>>() {});
                     assertEquals(201, response.getStatusCode());
                     assertEquals(ResponseMessage.SUCCESS_SAVE_DATA, response.getMessage());
+                    assertEquals(response.getData().getTableName(), request.getName());
                 } );
     }
 
