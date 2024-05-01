@@ -124,4 +124,10 @@ public class AuthServiceImpl implements AuthService {
                 .token(token)
                 .build();
     }
+
+    public boolean validateToken() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        UserAccount userAccount = (UserAccount) this.userAccountRepository.findByUsername(authentication.getPrincipal().toString()).orElse(null);
+        return userAccount != null;
+    }
 }

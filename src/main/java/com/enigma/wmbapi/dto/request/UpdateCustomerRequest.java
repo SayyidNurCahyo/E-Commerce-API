@@ -9,7 +9,7 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class UpdateCustomerRequest {
+public class  UpdateCustomerRequest {
     @NotBlank(message = "Id is Required")
     private String id;
     @NotBlank(message = "Name is Required")

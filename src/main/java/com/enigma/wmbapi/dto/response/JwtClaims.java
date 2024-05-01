@@ -9,7 +9,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class JwtClaims {
+public class    JwtClaims {
     private String userAccountId;
     private List<String> roles;
 }

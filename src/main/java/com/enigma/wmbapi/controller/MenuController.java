@@ -57,6 +57,7 @@ public class MenuController {
         }
     }
 
+    @SecurityRequirement(name = "Bearer Authentication")
     @GetMapping(path = "/{id}")
     public ResponseEntity<CommonResponse<MenuResponse>> getMenuById(@PathVariable String id) {
         MenuResponse menu = menuService.getMenuById(id);
@@ -67,6 +68,7 @@ public class MenuController {
         return ResponseEntity.ok(response);
     }
 
+    @SecurityRequirement(name = "Bearer Authentication")
     @GetMapping
     public ResponseEntity<CommonResponse<List<MenuResponse>>> getAllMenu(
             @RequestParam(name = "page", defaultValue = "1") Integer page,
@@ -95,6 +97,7 @@ public class MenuController {
         return ResponseEntity.ok(response);
     }
 
+    @SecurityRequirement(name = "Bearer Authentication")
     @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN')")
     @PutMapping
     public ResponseEntity<CommonResponse<MenuResponse>> updateMenu(@RequestPart(name = "menu") String jsonMenu,
@@ -116,6 +119,7 @@ public class MenuController {
         }
     }
 
+    @SecurityRequirement(name = "Bearer Authentication")
     @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<CommonResponse<MenuResponse>> deleteById(@PathVariable String id) {

@@ -25,7 +25,6 @@ import org.springframework.web.server.ResponseStatusException;
 public class CustomerServiceImpl implements CustomerService {
     private final CustomerRepository customerRepository;
     private final ValidationUtil validationUtil;
-    private final UserAccountRepository userAccountRepository;
 
     @Transactional(rollbackFor = Exception.class)
     @Override
@@ -36,7 +35,7 @@ public class CustomerServiceImpl implements CustomerService {
     @Transactional(readOnly = true)
     @Override
     public CustomerResponse getCustomerById(String id) {
-        Customer customer = customerRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"Customer Not Found"));
+        Customer customer = customerRepository.findByIdCustomer(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"Customer Not Found"));
         return convertToCustomerResponse(customer);
     }
 
@@ -47,10 +46,10 @@ public class CustomerServiceImpl implements CustomerService {
         if (request.getSize()<1) request.setSize(1);
         Pageable page = PageRequest.of(request.getPage() -1, request.getSize(), Sort.by(Sort.Direction.fromString(request.getDirection()), request.getSortBy()));
         if(request.getName()!=null || request.getPhone()!=null){
-            Page<Customer> customers = customerRepository.findCustomer(request.getName(), request.getPhone(), page);
+            Page<Customer> customers = customerRepository.findCustomer("%"+request.getName()+"%", "%"+request.getPhone()+"%", page);
             return convertToPageCustomerResponse(customers);
         }else {
-            return convertToPageCustomerResponse(customerRepository.findAll(page));
+            return convertToPageCustomerResponse(customerRepository.findAllCustomer(page));
         }
     }
 

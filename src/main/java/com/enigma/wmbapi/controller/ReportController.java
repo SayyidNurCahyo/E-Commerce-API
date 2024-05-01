@@ -4,6 +4,7 @@ import com.enigma.wmbapi.constant.APIUrl;
 import com.enigma.wmbapi.dto.response.GetTransactionResponse;
 import com.enigma.wmbapi.service.TransactionService;
 import com.enigma.wmbapi.util.ExportPDF;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.InputStreamResource;
@@ -24,6 +25,8 @@ import java.util.List;
 @RequestMapping(path = APIUrl.REPORT_API)
 public class ReportController {
     private final TransactionService transactionService;
+
+    @SecurityRequirement(name = "Bearer Authentication")
     @GetMapping(path = "/exportpdf", produces = MediaType.APPLICATION_PDF_VALUE)
     public ResponseEntity<InputStreamResource> transactionReports() throws Exception{
         List<GetTransactionResponse> transactions = transactionService.getTransaction();

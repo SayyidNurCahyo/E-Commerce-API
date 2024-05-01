@@ -38,6 +38,7 @@ public class TableController {
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
+    @SecurityRequirement(name = "Bearer Authentication")
     @GetMapping(path = "/{id}")
     public ResponseEntity<CommonResponse<TableResponse>> getTableById(@PathVariable String id) {
         TableResponse table = tableService.getTableById(id);
@@ -48,6 +49,7 @@ public class TableController {
         return ResponseEntity.ok(response);
     }
 
+    @SecurityRequirement(name = "Bearer Authentication")
     @GetMapping
     public ResponseEntity<CommonResponse<List<TableResponse>>> getAllTable(
             @RequestParam(name = "page", defaultValue = "1") Integer page,

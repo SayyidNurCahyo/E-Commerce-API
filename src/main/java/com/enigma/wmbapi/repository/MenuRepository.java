@@ -11,6 +11,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface MenuRepository extends JpaRepository<Menu, String> {
-    @Query(value = "SELECT * FROM m_menu where name = :name OR price = :price",nativeQuery = true)
+    @Query(value = "SELECT * FROM m_menu where name like :name OR price = :price",nativeQuery = true)
     Page<Menu> findMenu(@Param("name") String name, @Param("price") Long price, Pageable pageable);
 }

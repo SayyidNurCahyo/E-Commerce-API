@@ -39,6 +39,7 @@ public class TransactionalController {
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
+    @SecurityRequirement(name = "Bearer Authentication")
     @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN')")
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<CommonResponse<List<GetTransactionResponse>>> getAllTransaction(
@@ -62,6 +63,7 @@ public class TransactionalController {
         return ResponseEntity.ok(response);
     }
 
+    @SecurityRequirement(name = "Bearer Authentication")
     @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN') or @authenticatedUser.hasId(#customerId)")
     @GetMapping(path = "/{customerId}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<CommonResponse<List<GetTransactionResponse>>> getAllTransactionByCustomerId(
@@ -76,6 +78,7 @@ public class TransactionalController {
         return ResponseEntity.ok(response);
     }
 
+    @SecurityRequirement(name = "Bearer Authentication")
     @PostMapping("/status")
     public ResponseEntity<CommonResponse<?>> updateStatus(@RequestBody Map<String, Object> request){
         UpdateStatusRequest statusRequest = UpdateStatusRequest.builder()

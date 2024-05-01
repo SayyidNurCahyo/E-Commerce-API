@@ -63,7 +63,7 @@ public class MenuServiceImpl implements MenuService {
         if (request.getSize()<1) request.setSize(1);
         Pageable page = PageRequest.of(request.getPage() -1, request.getSize(), Sort.by(Sort.Direction.fromString(request.getDirection()), request.getSortBy()));
         if(request.getName()!=null || request.getPrice()!=null){
-            Page<Menu> menus = menuRepository.findMenu(request.getName(), request.getPrice(), page);
+            Page<Menu> menus = menuRepository.findMenu("%"+request.getName()+"%", request.getPrice(), page);
             return convertToPageMenuResponse(menus);
         }else {
             return convertToPageMenuResponse(menuRepository.findAll(page));

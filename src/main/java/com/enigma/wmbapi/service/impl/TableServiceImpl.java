@@ -47,7 +47,7 @@ public class TableServiceImpl implements TableService {
         if (request.getSize()<1) request.setSize(1);
         Pageable page = PageRequest.of(request.getPage() -1, request.getSize(), Sort.by(Sort.Direction.fromString(request.getDirection()), request.getSortBy()));
         if (request.getName()!=null){
-            Page<Table> tables = tableRepository.findTable(request.getName(),page);
+            Page<Table> tables = tableRepository.findTable("%"+request.getName()+"%",page);
             return convertToPageTableResponse(tables);
         }else {
             return convertToPageTableResponse(tableRepository.findAll(page));
