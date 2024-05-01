@@ -85,7 +85,7 @@ public class ExportPDF {
                 cellAmount.setHorizontalAlignment(Element.ALIGN_CENTER);
                 table.addCell(cellAmount);
 
-                PdfPCell cellStatus = new PdfPCell(new Phrase(transactionResponse.getTransactionStatus()));
+                PdfPCell cellStatus = new PdfPCell(new Phrase(transactionResponse.getPaymentResponse().getTransactionStatus()));
                 cellStatus.setVerticalAlignment(Element.ALIGN_MIDDLE);
                 cellStatus.setHorizontalAlignment(Element.ALIGN_CENTER);
                 table.addCell(cellStatus);

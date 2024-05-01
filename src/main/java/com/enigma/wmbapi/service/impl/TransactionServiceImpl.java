@@ -112,7 +112,11 @@ public class TransactionServiceImpl implements TransactionService {
                     .table(table)
                     .transactionType(transaction.getTransType().getDescription())
                     .transactionDetails(transactionDetailResponses)
-                    .transactionStatus(transaction.getPayment().getTransactionStatus())
+                    .paymentResponse(PaymentResponse.builder()
+                            .id(transaction.getPayment().getId())
+                            .token(transaction.getPayment().getToken())
+                            .redirectUrl(transaction.getPayment().getRedirectURL())
+                            .transactionStatus(transaction.getPayment().getTransactionStatus()).build())
                     .build();
         }).toList();
     }
@@ -144,7 +148,11 @@ public class TransactionServiceImpl implements TransactionService {
                     .table(table)
                     .transactionType(trx.getTransType().getDescription())
                     .transactionDetails(trxDetailResponses)
-                    .transactionStatus(trx.getPayment().getTransactionStatus())
+                    .paymentResponse(PaymentResponse.builder()
+                            .id(trx.getPayment().getId())
+                            .token(trx.getPayment().getToken())
+                            .redirectUrl(trx.getPayment().getRedirectURL())
+                            .transactionStatus(trx.getPayment().getTransactionStatus()).build())
                     .build();
         });
     }
@@ -173,7 +181,11 @@ public class TransactionServiceImpl implements TransactionService {
                     .table(table)
                     .transactionType(trx.getTransType().getDescription())
                     .transactionDetails(trxDetailResponses)
-                    .transactionStatus(trx.getPayment().getTransactionStatus())
+                    .paymentResponse(PaymentResponse.builder()
+                            .id(trx.getPayment().getId())
+                            .token(trx.getPayment().getToken())
+                            .redirectUrl(trx.getPayment().getRedirectURL())
+                            .transactionStatus(trx.getPayment().getTransactionStatus()).build())
                     .build();
         }).toList();
     }

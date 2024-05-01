@@ -17,5 +17,5 @@ public class GetTransactionResponse {
     private String table;
     private String transactionType;
     private List<TransactionDetailResponse> transactionDetails;
-    private String transactionStatus;
+    private PaymentResponse paymentResponse;
 }
