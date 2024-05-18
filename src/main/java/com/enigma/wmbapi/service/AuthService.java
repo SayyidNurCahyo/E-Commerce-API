@@ -9,6 +9,5 @@ public interface AuthService {
     RegisterResponse registerCustomer(RegisterRequest request);
     RegisterResponse registerAdmin(RegisterRequest request);
     LoginResponse login(AuthRequest request);
-
     boolean validateToken();
 }

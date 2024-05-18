@@ -38,12 +38,10 @@ class CustomerServiceImplTest {
     private CustomerRepository customerRepository;
     @Mock
     private ValidationUtil validationUtil;
-    @Mock
-    private UserAccountRepository userAccountRepository;
     private CustomerService customerService;
     @BeforeEach
     void setUp(){
-        customerService = new CustomerServiceImpl(customerRepository, validationUtil, userAccountRepository);
+        customerService = new CustomerServiceImpl(customerRepository, validationUtil);
     }
 
     @Test
@@ -121,9 +119,8 @@ class CustomerServiceImplTest {
                         .role(UserRole.ROLE_CUSTOMER).build())).build();
         customer.setUserAccount(userAccount);
         when(customerRepository.findById("tesId")).thenReturn(Optional.of(customer));
-        CustomerResponse result = customerService.deleteById("tesId");
+        CustomerResponse result = customerService.disableById("tesId");
         verify(customerRepository).delete(customer);
-        verify(userAccountRepository).delete(userAccount);
         assertEquals(customer.getId(), result.getCustomerId());
         assertEquals(customer.getName(), result.getCustomerName());
         assertEquals(customer.getPhone(), result.getCustomerPhone());
